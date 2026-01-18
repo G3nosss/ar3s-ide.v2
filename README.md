@@ -2,7 +2,20 @@
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge&logo=semver)
 ![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge&logo=activity)
-![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![License](https://img.shields.io/badge/license-AGPL_v3-red?style=for-the-badge)
+
+...
+
+## 📄 License
+
+This project is protected under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+This ensures that the software remains open and free. Unlike permissive licenses, the AGPL-3.0 requires that:
+1.  **Source Code Disclosure:** If you modify this software and distribute it (or host it as a service over a network), you must make your source code available to users.
+2.  **Same License:** Derivatives must be released under the same AGPL-3.0 license.
+
+See `LICENSE` for the full legal text.
+
 
 ## ⚡ Overview
 

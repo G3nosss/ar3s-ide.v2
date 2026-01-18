@@ -14,18 +14,18 @@ let currentFwUrl = null;
 
 function cleanupBlobUrls() {
   if (currentManifestUrl) {
-    try { URL.revokeObjectURL(currentManifestUrl); } catch {}
+    try { URL.revokeObjectURL(currentManifestUrl); } catch {}  // Ignore if already revoked
     currentManifestUrl = null;
   }
   if (currentFwUrl) {
-    try { URL.revokeObjectURL(currentFwUrl); } catch {}
+    try { URL.revokeObjectURL(currentFwUrl); } catch {}  // Ignore if already revoked
     currentFwUrl = null;
   }
 }
 
 function parseOffset(hexStr) {
   try {
-    if (!hexStr) return 0x10000;
+    if (!hexStr || hexStr.trim() === '') return 0x10000;
     // Always parse as hex - with or without 0x prefix
     if (hexStr.startsWith('0x') || hexStr.startsWith('0X')) {
       return parseInt(hexStr, 16);

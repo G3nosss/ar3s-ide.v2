@@ -39,3 +39,5 @@ button, .btn {
 .panel {
   background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1rem;
 }
+/* helper */
+.muted { color: var(--muted); font-size: 0.9em; }

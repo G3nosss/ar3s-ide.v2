@@ -1,3 +1,5 @@
+// Minimal Monaco setup; no bundler to keep size low
+// Loads a basic Arduino sketch template and lets user download .ino
 const initialSketch = `#include <Arduino.h>
 
 void setup() {
@@ -13,10 +15,14 @@ void loop() {
 }
 `;
 
+export function getEditorValue() {
+  return window._ar3sEditor?.getValue() || '';
+}
+
 function setupMonaco() {
   window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
   window.require(['vs/editor/editor.main'], () => {
-    const editor = monaco.editor.create(document.getElementById('editor'), {
+    window._ar3sEditor = monaco.editor.create(document.getElementById('editor'), {
       value: initialSketch,
       language: 'cpp',
       theme: 'vs-dark',
@@ -25,7 +31,7 @@ function setupMonaco() {
     });
 
     document.getElementById('downloadBtn').addEventListener('click', () => {
-      const code = editor.getValue();
+      const code = window._ar3sEditor.getValue();
       const blob = new Blob([code], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -35,7 +41,7 @@ function setupMonaco() {
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById('clearBtn').addEventListener('click', () => editor.setValue(''));
+    document.getElementById('clearBtn').addEventListener('click', () => window._ar3sEditor.setValue(''));
   });
 }
 setupMonaco();

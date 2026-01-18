@@ -1,34 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Ar3s IDE v2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="/assets/styles.css">
-  <!-- Monaco via CDN to keep server size minimal -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js" crossorigin="anonymous"></script>
-</head>
-<body>
-  <header class="header">
-    <div class="brand">Ar3s</div>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/simulator.html">Simulator</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <h1>Ar3s IDE v2</h1>
-    <div class="panel" style="height: 540px;">
-      <div id="editor" style="height: 480px;"></div>
-      <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
-        <button id="downloadBtn">Download as .ino</button>
-        <button id="clearBtn">Clear</button>
-      </div>
-    </div>
-  </main>
-
-  <script type="module" src="/assets/ide.js"></script>
-</body>
-</html>
+<button id="build-avr-btn">Build (AVR: Uno)</button>
+<div id="build-log"></div>
+<script src="/assets/build-avr.js"></script>

@@ -1,3 +1,40 @@
-<button id="build-avr-btn">Build (AVR: Uno)</button>
-<div id="build-log"></div>
-<script src="/assets/build-avr.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ar3s IDE v2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/styles.css">
+  <!-- Monaco via CDN to keep server size minimal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">Ar3s</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/pages/simulator.html">Simulator</a>
+      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/pages/esp-custom.html">ESP Custom Flasher</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Ar3s IDE v2</h1>
+    <div class="panel" style="height: auto;">
+      <div id="editor" style="height: 480px;"></div>
+
+      <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+        <button id="downloadBtn">Download as .ino</button>
+        <button id="buildAvrBtn">Build (AVR: Uno)</button>
+        <button id="clearBtn">Clear</button>
+      </div>
+
+      <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
+    </div>
+  </main>
+
+  <script type="module" src="/assets/ide.js"></script>
+  <script type="module" src="/assets/build-avr.js"></script>
+</body>
+</html>

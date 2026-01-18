@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ESP Custom Flasher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/styles.css">
+  <!-- esp-web-tools web component -->
+  <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">Ar3s</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/pages/ide.html">Ar3s IDE v2</a>
+      <a href="/pages/simulator.html">Simulator</a>
+      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>ESP Custom Flasher</h1>
+    <div class="panel">
+      <p>Flash a user-selected firmware .bin to ESP32/ESP8266 via WebSerial/WebUSB. Requires HTTPS (ar3s-compiler.duckdns.org) and Chrome/Edge.</p>
+
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
+        <div>
+          <label for="chip">Chip Family</label><br>
+          <select id="chip">
+            <option value="ESP32" selected>ESP32</option>
+            <option value="ESP8266">ESP8266</option>
+          </select>
+        </div>
+        <div>
+          <label for="offset">Offset (hex)</label><br>
+          <input id="offset" type="text" value="0x10000" style="width:120px">
+          <small class="muted">Typical app offset: ESP32 0x10000, ESP8266 0x00000</small>
+        </div>
+        <div>
+          <label for="binfile">Firmware (.bin)</label><br>
+          <input id="binfile" type="file" accept=".bin">
+        </div>
+        <button id="prepareBtn" class="btn">Prepare Flash</button>
+      </div>
+
+      <div id="status" style="margin-top:0.5rem;" class="muted"></div>
+
+      <div style="margin-top:1rem;">
+        <!-- Install button uses generated manifest with blob URLs -->
+        <esp-web-install-button id="installBtn"></esp-web-install-button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/assets/esp-custom.js"></script>
+</body>
+</html>

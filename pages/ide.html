@@ -24,17 +24,36 @@
     <div class="panel" style="height: auto;">
       <div id="editor" style="height: 480px;"></div>
 
-      <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+      <div style="display:flex; gap:0.5rem; margin-top:0.5rem; align-items:center; flex-wrap:wrap;">
+        <label for="boardSelect" style="font-weight:600;">BOARD:</label>
+        <select id="boardSelect" class="board-select">
+          <option value="uno" data-fqbn="arduino:avr:uno">Arduino Uno</option>
+          <option value="nano" data-fqbn="arduino:avr:nano">Arduino Nano</option>
+          <option value="mega" data-fqbn="arduino:avr:mega">Arduino Mega 2560</option>
+          <option value="mark4" data-fqbn="arduino:avr:uno">Mark 4 (Custom)</option>
+        </select>
         <button id="downloadBtn">Download as .ino</button>
-        <button id="buildAvrBtn">Build (AVR: Uno)</button>
+        <button id="buildAvrBtn">Build (AVR)</button>
+        <button id="uploadArduinoBtn">Upload to Arduino</button>
         <button id="clearBtn">Clear</button>
       </div>
 
       <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
+      
+      <div id="uploadHistory" class="panel upload-history" style="margin-top:0.75rem;"></div>
     </div>
   </main>
 
   <script type="module" src="/assets/ide.js"></script>
   <script type="module" src="/assets/build-avr.js"></script>
+  <script type="module">
+    import { getEditorValue } from '/assets/ide.js';
+    import { initializeUpload } from '/assets/upload-arduino.js';
+    
+    // Initialize upload functionality after page loads
+    window.addEventListener('load', () => {
+      initializeUpload(getEditorValue);
+    });
+  </script>
 </body>
 </html>

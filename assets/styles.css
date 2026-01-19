@@ -41,3 +41,40 @@ button, .btn {
 }
 /* helper */
 .muted { color: var(--muted); font-size: 0.9em; }
+
+/* Board selector */
+.board-select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.board-select:hover {
+  border-color: var(--accent);
+}
+.board-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Upload history */
+.upload-history {
+  font-size: 0.9em;
+}
+.upload-history-header {
+  user-select: none;
+}
+.upload-history-header:hover {
+  background: rgba(0, 217, 255, 0.05);
+}
+.upload-history-item {
+  font-family: 'Courier New', monospace;
+}
+.toggle-icon {
+  color: var(--muted);
+  font-size: 0.8em;
+}

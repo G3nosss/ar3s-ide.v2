@@ -23,8 +23,19 @@ export function parseIntelHex(hexString) {
     const recordType = parseInt(line.substring(7, 9), 16);
     const data = line.substring(9, 9 + byteCount * 2);
     
-    // Checksum verification (optional but good practice)
+    // Checksum verification
     const checksumProvided = parseInt(line.substring(9 + byteCount * 2, 11 + byteCount * 2), 16);
+    
+    // Calculate expected checksum
+    let checksumCalculated = byteCount + (address >> 8) + (address & 0xFF) + recordType;
+    for (let i = 0; i < byteCount; i++) {
+      checksumCalculated += parseInt(data.substring(i * 2, i * 2 + 2), 16);
+    }
+    checksumCalculated = ((~checksumCalculated) + 1) & 0xFF;
+    
+    if (checksumCalculated !== checksumProvided) {
+      throw new Error(`Checksum mismatch at line: ${line}. Expected 0x${checksumCalculated.toString(16)}, got 0x${checksumProvided.toString(16)}`);
+    }
     
     switch (recordType) {
       case 0x00: // Data record

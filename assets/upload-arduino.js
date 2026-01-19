@@ -87,10 +87,22 @@ async function fetchHexFile(artifactUrl, logEl) {
 async function openSerialPort(baudRate, logEl) {
   logEl.textContent += '\n\nOpening serial port...';
   
-  // Request port (shows browser permission dialog)
-  if (!currentPort) {
-    currentPort = await navigator.serial.requestPort();
+  // Try to reuse existing port if it's open, otherwise request new one
+  if (currentPort) {
+    try {
+      // Check if port is still valid by checking readable/writable streams
+      if (currentPort.readable && currentPort.writable) {
+        // Port is already open, close it first to reset state
+        await currentPort.close();
+      }
+    } catch (err) {
+      // Port may already be closed, continue
+    }
+    currentPort = null;
   }
+  
+  // Request new port (shows browser permission dialog)
+  currentPort = await navigator.serial.requestPort();
   
   // Open with board's baud rate
   await currentPort.open({ baudRate });
@@ -146,12 +158,23 @@ export async function buildAndUpload(getEditorValueFn, boardId, logEl, historyEl
     // Step 6: Upload via appropriate protocol
     logEl.textContent += '\n\n';
     
+    // Store the current log length to only update the last line during progress
+    let lastLogLength = logEl.textContent.length;
+    
     const onProgress = (status) => {
-      logEl.textContent = logEl.textContent.split('\n').slice(0, -1).join('\n') + '\n' + status.message;
+      // Replace only the last progress line for better performance
+      logEl.textContent = logEl.textContent.substring(0, lastLogLength) + status.message;
+      lastLogLength = logEl.textContent.length;
       logEl.scrollTop = logEl.scrollHeight;
       
       if (status.bytesWritten) {
         bytesUploaded = status.bytesWritten;
+      }
+      
+      // On stage change, add newline for next update
+      if (status.stage === 'complete' || status.stage === 'done') {
+        logEl.textContent += '\n';
+        lastLogLength = logEl.textContent.length;
       }
     };
     

@@ -115,6 +115,8 @@ export function renderHistory(containerElement) {
  * Get sketch name from code (first line or "Untitled")
  */
 export function getSketchNameFromCode(code) {
+  const MAX_SKETCH_NAME_LENGTH = 50;
+  
   if (!code) return 'Untitled';
   
   const lines = code.trim().split('\n');
@@ -123,7 +125,7 @@ export function getSketchNameFromCode(code) {
     // Look for comment with sketch name
     if (trimmed.startsWith('//')) {
       const name = trimmed.substring(2).trim();
-      if (name && name.length > 0 && name.length < 50) {
+      if (name && name.length > 0 && name.length < MAX_SKETCH_NAME_LENGTH) {
         return name;
       }
     }

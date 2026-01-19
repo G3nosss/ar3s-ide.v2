@@ -1,6 +1,8 @@
 // STK500v2 bootloader protocol implementation for AVR (Mega 2560)
 // Pure JavaScript implementation for WebSerial
 
+import { readWithTimeout, RESPONSE_TIMEOUT, PROGRAM_TIMEOUT } from './serial-utils.js';
+
 // STK500v2 Protocol Constants
 const MESSAGE_START = 0x1B;
 const TOKEN = 0x0E;
@@ -47,30 +49,9 @@ function createMessage(sequenceNumber, command, data = []) {
 }
 
 /**
- * Read from serial port with timeout
- */
-async function readWithTimeout(reader, length, timeout = 2000) {
-  const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('Read timeout')), timeout)
-  );
-  
-  const buffer = [];
-  const readPromise = (async () => {
-    while (buffer.length < length) {
-      const { value, done } = await reader.read();
-      if (done) throw new Error('Stream closed');
-      buffer.push(...value);
-    }
-    return new Uint8Array(buffer.slice(0, length));
-  })();
-  
-  return Promise.race([readPromise, timeoutPromise]);
-}
-
-/**
  * Read STK500v2 response
  */
-async function readResponse(reader, timeout = 2000) {
+async function readResponse(reader, timeout = RESPONSE_TIMEOUT) {
   // Read header: START + SEQ + SIZE_H + SIZE_L + TOKEN
   const header = await readWithTimeout(reader, 5, timeout);
   
@@ -102,7 +83,7 @@ async function readResponse(reader, timeout = 2000) {
 /**
  * Send command and get response
  */
-async function sendCommand(writer, reader, sequenceNumber, command, data = [], timeout = 2000) {
+async function sendCommand(writer, reader, sequenceNumber, command, data = [], timeout = RESPONSE_TIMEOUT) {
   const message = createMessage(sequenceNumber, command, data);
   await writer.write(message);
   
@@ -201,7 +182,7 @@ async function programFlash(writer, reader, sequenceNumber, data, pageSize) {
     ...data
   ];
   
-  await sendCommand(writer, reader, sequenceNumber, CMD_PROGRAM_FLASH_ISP, params, 5000);
+  await sendCommand(writer, reader, sequenceNumber, CMD_PROGRAM_FLASH_ISP, params, PROGRAM_TIMEOUT);
 }
 
 /**

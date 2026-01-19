@@ -1,6 +1,8 @@
 // STK500v1 bootloader protocol implementation for AVR (Uno, Nano, Mark 4)
 // Pure JavaScript implementation for WebSerial
 
+import { readWithTimeout, SYNC_TIMEOUT, READ_TIMEOUT, PROGRAM_TIMEOUT } from './serial-utils.js';
+
 // STK500 Protocol Constants
 const STK_OK = 0x10;
 const STK_INSYNC = 0x14;
@@ -22,30 +24,9 @@ const STK_SW_MAJOR = 0x81;
 const STK_SW_MINOR = 0x82;
 
 /**
- * Read from serial port with timeout
- */
-async function readWithTimeout(reader, length, timeout = 1000) {
-  const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('Read timeout')), timeout)
-  );
-  
-  const buffer = [];
-  const readPromise = (async () => {
-    while (buffer.length < length) {
-      const { value, done } = await reader.read();
-      if (done) throw new Error('Stream closed');
-      buffer.push(...value);
-    }
-    return new Uint8Array(buffer.slice(0, length));
-  })();
-  
-  return Promise.race([readPromise, timeoutPromise]);
-}
-
-/**
  * Send command and wait for response
  */
-async function sendCommand(writer, reader, command, timeout = 1000) {
+async function sendCommand(writer, reader, command, timeout = READ_TIMEOUT) {
   await writer.write(new Uint8Array(command));
   const response = await readWithTimeout(reader, 2, timeout);
   
@@ -65,7 +46,7 @@ async function sendCommand(writer, reader, command, timeout = 1000) {
 async function syncBootloader(writer, reader, maxRetries = 10) {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      await sendCommand(writer, reader, [STK_GET_SYNC, CRC_EOP], 500);
+      await sendCommand(writer, reader, [STK_GET_SYNC, CRC_EOP], SYNC_TIMEOUT);
       return true;
     } catch (err) {
       // Retry with small delay
@@ -80,7 +61,7 @@ async function syncBootloader(writer, reader, maxRetries = 10) {
  */
 async function readSignature(writer, reader) {
   await writer.write(new Uint8Array([STK_READ_SIGN, CRC_EOP]));
-  const response = await readWithTimeout(reader, 5, 1000);
+  const response = await readWithTimeout(reader, 5, READ_TIMEOUT);
   
   if (response[0] !== STK_INSYNC) {
     throw new Error('Signature read failed: INSYNC not received');
@@ -108,7 +89,7 @@ async function programPage(writer, reader, data, pageSize) {
   command.push(...data);
   command.push(CRC_EOP);
   
-  await sendCommand(writer, reader, command, 5000); // Longer timeout for programming
+  await sendCommand(writer, reader, command, PROGRAM_TIMEOUT); // Longer timeout for programming
 }
 
 /**

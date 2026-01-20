@@ -1,0 +1,6 @@
+FROM debian:bullseye-slim
+RUN apt-get update && apt-get install -y curl ca-certificates gnupg2 build-essential python3 git && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin bash
+RUN arduino-cli config init && arduino-cli core update-index && arduino-cli core install arduino:avr
+WORKDIR /work
+ENTRYPOINT ["arduino-cli"]

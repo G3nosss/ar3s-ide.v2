@@ -1,0 +1,81 @@
+import express from "express";
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
+import os from "os";
+import { randomUUID } from "crypto";
+
+const app = express();
+app.use(express.json({ limit: "2mb" }));
+
+const AVR_OUT_DIR = "/var/www/ar3s/firmware/avr";
+try { fs.mkdirSync(AVR_OUT_DIR, { recursive: true }); } catch {}
+
+app.post("/api/build/avr", (req, res) => {
+  const { code, fqbn = "arduino:avr:uno" } = req.body || {};
+  if (!code || typeof code !== "string") return res.status(400).send('Missing "code"');
+
+  const jobId = randomUUID();
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `avr-${jobId}-`));
+  const sketchDir = path.join(tmpDir, "sketch");
+import express from "express";
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
+import os from "os";
+import { randomUUID } from "crypto";
+
+const app = express();
+app.use(express.json({ limit: "2mb" }));
+
+const AVR_OUT_DIR = "/var/www/ar3s/firmware/avr";
+try { fs.mkdirSync(AVR_OUT_DIR, { recursive: true }); } catch {}
+
+app.post("/api/build/avr", (req, res) => {
+  const { code, fqbn = "arduino:avr:uno" } = req.body || {};
+  if (!code || typeof code !== "string") return res.status(400).send('Missing "code"');
+
+  const jobId = randomUUID();
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `avr-${jobId}-`));
+  const sketchDir = path.join(tmpDir, "sketch");
+  const outDir = path.join(tmpDir, "build");
+  fs.mkdirSync(sketchDir, { recursive: true });
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path. join(sketchDir, "sketch.ino"), code);
+
+  const cmd = [
+    "docker run --rm",
+    `-v "${sketchDir}":/work/sketch`,
+    `-v "${outDir}":/work/build`,
+    "arduino-cli-avr",
+    `arduino-cli compile --fqbn ${fqbn} /work/sketch --output-dir /work/build --warnings all`
+  ].join(" ");
+
+  exec(cmd, { maxBuffer: 12 * 1024 * 1024 }, (err, stdout, stderr) => {
+    const log = `${stdout}\n${stderr}`;
+    try {
+      if (err) {
+        cleanup(tmpDir);
+        return res.status(500).json({ log, error: err.message });
+      }
+      const files = fs.readdirSync(outDir);
+      const hex = files.find(f => f.endsWith(".hex"));
+      if (!hex) {
+        cleanup(tmpDir);
+        return res.status(500).json({ log, error: "No . hex produced" });
+      }
+      const destHex = path. join(AVR_OUT_DIR, `${jobId}.hex`);
+      fs.copyFileSync(path.join(outDir, hex), destHex);
+      cleanup(tmpDir);
+      return res.json({ artifactUrl: `/firmware/avr/${jobId}.hex`, log });
+    } catch (e) {
+      cleanup(tmpDir);
+      return res.status(500).json({ error: e.message });
+    }
+  });
+});
+
+function cleanup(dir) { try { fs.rmSync(dir, { recursive:  true, force: true }); } catch {} }
+
+const port = process.env.PORT || 8081;
+app.listen(port, () => console.log(`Ar3s AVR build API listening on ${port}`));

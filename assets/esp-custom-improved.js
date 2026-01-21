@@ -178,6 +178,7 @@ async function flashFirmware() {
 }
 
 // Simulate flashing process (for demonstration)
+// TODO: Replace with actual esp-web-tools integration or WebSerial flashing protocol
 // In production, this would be replaced with actual esp-web-tools integration
 async function simulateFlashing() {
   const steps = [

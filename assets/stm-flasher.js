@@ -318,6 +318,7 @@ async function flashViaDFU(firmwareData) {
 async function flashViaSerial(firmwareData) {
   log('[SERIAL] Starting serial flash...', 'info');
   log('[SERIAL] Using STM32 bootloader protocol', 'info');
+  log(`[SERIAL] Firmware size: ${firmwareData.length} bytes`, 'info');
   
   // This is a simplified implementation
   // Real STM32 bootloader protocol requires:
@@ -328,10 +329,10 @@ async function flashViaSerial(firmwareData) {
   // 5. Verify
   
   // Simulate the process
-  await simulateSerialFlashing(firmwareData);
+  await simulateSerialFlashing();
 }
 
-async function simulateSerialFlashing(firmwareData) {
+async function simulateSerialFlashing() {
   const steps = [
     { delay: 500, message: '[SERIAL] Initiating bootloader...', type: 'info' },
     { delay: 600, message: '[SERIAL] Bootloader detected', type: 'success' },

@@ -1,5 +1,5 @@
 // Homepage animations using vanilla JavaScript
-// (Framer Motion is not used as it requires React - using vanilla JS animations instead)
+// Using vanilla JS for better performance and no external dependencies
 
 document.addEventListener('DOMContentLoaded', () => {
   // Animate hero content on load

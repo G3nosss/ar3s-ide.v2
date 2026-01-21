@@ -86,7 +86,7 @@ connectBtn?.addEventListener('click', async () => {
     // Wait for ACK
     const { value, done } = await reader.read();
     if (done || !value || value[0] !== 0x79) {
-      throw new Error('No sync ACK - ensure board is in bootloader mode (BOOT0=1)');
+      throw new Error('No sync ACK - ensure board is in bootloader mode (set BOOT0 pin HIGH or move BOOT0 jumper to 1 position, then reset)');
     }
     
     log('✓ Bootloader sync successful', 'success');
@@ -154,9 +154,11 @@ flashBtn?.addEventListener('click', async () => {
     const data = new Uint8Array(firmware);
     
     log('> Erasing flash memory...', 'warning');
+    log('! WARNING: This will erase application flash (bootloader preserved)', 'warning');
     statusEl.textContent = 'Erasing flash...';
     
     // Extended Erase (0x44) - erase all pages
+    // Note: Using 0xFFFF erases all application flash but preserves system memory
     await sendCommand(0x44);
     await writer.write(new Uint8Array([0xFF, 0xFF, 0x00])); // Global erase
     

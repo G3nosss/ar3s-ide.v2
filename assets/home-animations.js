@@ -51,7 +51,8 @@
 
   // Power indicator pulse
   function animatePowerIndicator() {
-    const indicator = document.querySelector('.hero > div:nth-child(4) > div');
+    const indicators = document.querySelectorAll('.hero [style*="border: 2px solid"]');
+    const indicator = indicators[indicators.length - 1]; // Get the power indicator box
     if (!indicator) return;
 
     let shadowSize = 10;
@@ -119,7 +120,8 @@
     const heroAccent = document.querySelector('.hero-accent');
     const heroTitle = document.querySelector('.hero-title');
     const heroSubtitle = document.querySelector('.hero-subtitle');
-    const heroCTA = document.querySelector('.hero > div:nth-child(4)');
+    const heroElements = document.querySelectorAll('.hero > div');
+    const heroCTA = heroElements[heroElements.length - 1]; // Get the last div (power indicator)
 
     const elements = [
       { el: heroAccent, delay: 300 },

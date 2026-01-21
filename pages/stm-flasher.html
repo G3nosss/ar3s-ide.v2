@@ -2,26 +2,287 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>STM Flasher (Preview)</title>
+  <title>STM Flasher | AR3S</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .flasher-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .flasher-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .control-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .control-item label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .control-item select,
+    .control-item input[type="text"],
+    .control-item input[type="file"] {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .control-item select:hover,
+    .control-item input:hover {
+      border-color: var(--accent);
+    }
+    
+    .control-item select:focus,
+    .control-item input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: var(--bg-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .console-output {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--success);
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .console-line {
+      margin-bottom: 0.3rem;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .console-line.error {
+      color: var(--danger);
+    }
+    
+    .console-line.warning {
+      color: var(--warning);
+    }
+    
+    .console-line.success {
+      color: var(--success);
+    }
+    
+    .console-line.info {
+      color: var(--accent);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .status-badge.idle {
+      background: rgba(107, 118, 136, 0.2);
+      color: var(--muted);
+    }
+    
+    .status-badge.connecting {
+      background: rgba(255, 170, 0, 0.2);
+      color: var(--warning);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .status-badge.flashing {
+      background: rgba(0, 217, 255, 0.2);
+      color: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .status-badge.success {
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--success);
+    }
+    
+    .status-badge.error {
+      background: rgba(255, 51, 102, 0.2);
+      color: var(--danger);
+    }
+    
+    .info-box {
+      background: rgba(0, 217, 255, 0.05);
+      border: 1px solid rgba(0, 217, 255, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .info-box h4 {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .info-box ul {
+      margin: 0.5rem 0 0 1.5rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
-    <div class="brand">Ar3s</div>
+    <div class="brand">
+      <span class="brand-icon">◢</span>
+      <span>AR3S</span>
+    </div>
     <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/index.html" class="nav-link">Home</a>
+      <a href="/pages/ide.html" class="nav-link">IDE</a>
+      <a href="/pages/simulator.html" class="nav-link">Simulator</a>
+      <a href="/pages/esp-custom.html" class="nav-link">ESP Custom</a>
     </nav>
   </header>
 
-  <main class="container">
-    <h1>STM Flasher</h1>
-    <div class="panel">
-      <p>Planned: WebDFU flashing for DFU-capable boards and Local Agent for broader STM32 support.</p>
-      <p class="muted">Browser flashing requires DFU bootloader + HTTPS. Otherwise use the Local Agent (coming soon).</p>
+  <main class="container flasher-container">
+    <h1 style="margin-bottom: 2rem; color: var(--accent); text-align: center;">
+      <i class="fas fa-shield-halved"></i> STM32 Flasher
+    </h1>
+    
+    <div class="info-box">
+      <h4><i class="fas fa-info-circle"></i> STM32 Flashing Requirements</h4>
+      <ul>
+        <li>STM32 board in DFU mode (press BOOT button, reset, release BOOT)</li>
+        <li>USB connection to your computer</li>
+        <li>Chrome/Edge browser with WebSerial or WebUSB support</li>
+        <li>HTTPS connection (ar3s-compiler.duckdns.org)</li>
+      </ul>
+    </div>
+    
+    <div class="flasher-panel">
+      <p style="margin-bottom: 1.5rem; color: var(--text-dim);">
+        Flash firmware to STM32 boards using WebSerial/WebUSB. 
+        Direct firmware deployment from your browser.
+      </p>
+
+      <div class="control-group">
+        <div class="control-item">
+          <label for="stmChip"><i class="fas fa-microchip"></i> STM32 Family</label>
+          <select id="stmChip">
+            <option value="STM32F1" selected>STM32F1 (Blue Pill)</option>
+            <option value="STM32F4">STM32F4 (Black Pill)</option>
+            <option value="STM32L4">STM32L4</option>
+            <option value="STM32H7">STM32H7</option>
+          </select>
+        </div>
+        
+        <div class="control-item">
+          <label for="flashMode"><i class="fas fa-cog"></i> Flash Mode</label>
+          <select id="flashMode">
+            <option value="dfu" selected>DFU (USB Bootloader)</option>
+            <option value="serial">Serial (UART)</option>
+          </select>
+        </div>
+        
+        <div class="control-item">
+          <label for="stmFirmware"><i class="fas fa-file-code"></i> Firmware (.bin/.hex)</label>
+          <input id="stmFirmware" type="file" accept=".bin,.hex">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <span class="status-badge idle" id="statusBadge">IDLE</span>
+        </div>
+        <button id="flashBtn" class="btn-primary">
+          <i class="fas fa-bolt"></i> FLASH FIRMWARE
+        </button>
+      </div>
+    </div>
+
+    <div class="flasher-panel">
+      <h3 style="margin-bottom: 1rem; color: var(--text);">
+        <i class="fas fa-terminal"></i> Console Output
+      </h3>
+      <div class="console-output" id="consoleOutput">
+        <div class="console-line info">[SYSTEM] STM32 Flasher initialized</div>
+        <div class="console-line info">[READY] Select firmware and click FLASH FIRMWARE</div>
+      </div>
     </div>
   </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <span class="footer-copyright">© 2026 Ar3s</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/G3nosss" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://instagram.com/g3nos__" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/assets/stm-flasher.js"></script>
 </body>
 </html>

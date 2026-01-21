@@ -2,57 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>ESP Custom Flasher</title>
+  <title>ESP Custom Flasher | AR3S</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/assets/styles.css">
-  <!-- esp-web-tools web component -->
-  <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .flasher-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .flasher-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .control-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .control-item label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .control-item select,
+    .control-item input[type="text"],
+    .control-item input[type="file"] {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .control-item select:hover,
+    .control-item input:hover {
+      border-color: var(--accent);
+    }
+    
+    .control-item select:focus,
+    .control-item input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: var(--bg-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .console-output {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--success);
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .console-line {
+      margin-bottom: 0.3rem;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .console-line.error {
+      color: var(--danger);
+    }
+    
+    .console-line.warning {
+      color: var(--warning);
+    }
+    
+    .console-line.success {
+      color: var(--success);
+    }
+    
+    .console-line.info {
+      color: var(--accent);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .status-badge.idle {
+      background: rgba(107, 118, 136, 0.2);
+      color: var(--muted);
+    }
+    
+    .status-badge.connecting {
+      background: rgba(255, 170, 0, 0.2);
+      color: var(--warning);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .status-badge.flashing {
+      background: rgba(0, 217, 255, 0.2);
+      color: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .status-badge.success {
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--success);
+    }
+    
+    .status-badge.error {
+      background: rgba(255, 51, 102, 0.2);
+      color: var(--danger);
+    }
+  </style>
 </head>
 <body>
   <header class="header">
-    <div class="brand">Ar3s</div>
+    <div class="brand">
+      <span class="brand-icon">◢</span>
+      <span>AR3S</span>
+    </div>
     <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/simulator.html">Simulator</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/index.html" class="nav-link">Home</a>
+      <a href="/pages/ide.html" class="nav-link">IDE</a>
+      <a href="/pages/simulator.html" class="nav-link">Simulator</a>
+      <a href="/pages/esp-flasher.html" class="nav-link">ESP Flasher</a>
     </nav>
   </header>
 
-  <main class="container">
-    <h1>ESP Custom Flasher</h1>
-    <div class="panel">
-      <p>Flash a user-selected firmware .bin to ESP32/ESP8266 via WebSerial/WebUSB. Requires HTTPS (ar3s-compiler.duckdns.org) and Chrome/Edge.</p>
+  <main class="container flasher-container">
+    <h1 style="margin-bottom: 2rem; color: var(--accent); text-align: center;">
+      <i class="fas fa-bolt"></i> ESP Custom Flasher
+    </h1>
+    
+    <div class="flasher-panel">
+      <p style="margin-bottom: 1.5rem; color: var(--text-dim);">
+        Flash custom firmware (.bin) to ESP32/ESP8266 via WebSerial. 
+        Requires HTTPS (<span style="color: var(--accent);">ar3s-compiler.duckdns.org</span>) and Chrome/Edge.
+      </p>
 
-      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
-        <div>
-          <label for="chip">Chip Family</label><br>
+      <div class="control-group">
+        <div class="control-item">
+          <label for="chip"><i class="fas fa-microchip"></i> Chip Family</label>
           <select id="chip">
             <option value="ESP32" selected>ESP32</option>
             <option value="ESP8266">ESP8266</option>
           </select>
         </div>
-        <div>
-          <label for="offset">Offset (hex)</label><br>
-          <input id="offset" type="text" value="0x10000" style="width:120px">
-          <small class="muted">Typical app offset: ESP32 0x10000, ESP8266 0x00000</small>
+        
+        <div class="control-item">
+          <label for="offset"><i class="fas fa-map-pin"></i> Offset (hex)</label>
+          <input id="offset" type="text" value="0x10000" placeholder="0x10000">
         </div>
-        <div>
-          <label for="binfile">Firmware (.bin)</label><br>
+        
+        <div class="control-item">
+          <label for="binfile"><i class="fas fa-file-code"></i> Firmware (.bin)</label>
           <input id="binfile" type="file" accept=".bin">
         </div>
-        <button id="prepareBtn" class="btn">Prepare Flash</button>
       </div>
 
-      <div id="status" style="margin-top:0.5rem;" class="muted"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <span class="status-badge idle" id="statusBadge">IDLE</span>
+        </div>
+        <button id="flashBtn" class="btn-primary">
+          <i class="fas fa-bolt"></i> FLASH FIRMWARE
+        </button>
+      </div>
+    </div>
 
-      <div style="margin-top:1rem;">
-        <!-- Install button uses generated manifest with blob URLs -->
-        <esp-web-install-button id="installBtn"></esp-web-install-button>
+    <div class="flasher-panel">
+      <h3 style="margin-bottom: 1rem; color: var(--text);">
+        <i class="fas fa-terminal"></i> Console Output
+      </h3>
+      <div class="console-output" id="consoleOutput">
+        <div class="console-line info">[SYSTEM] ESP Custom Flasher initialized</div>
+        <div class="console-line info">[READY] Select firmware and click FLASH FIRMWARE</div>
       </div>
     </div>
   </main>
 
-  <script type="module" src="/assets/esp-custom.js"></script>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <span class="footer-copyright">© 2026 Ar3s</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/G3nosss" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://instagram.com/g3nos__" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/assets/esp-custom-improved.js"></script>
 </body>
 </html>

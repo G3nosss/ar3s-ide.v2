@@ -2,56 +2,199 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Ar3s | Tech IDE Suite</title>
+  <title>Ar3s | Futuristic IDE Suite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="/assets/styles.css">
+  <!-- Framer Motion via CDN -->
+  <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
   <header class="header">
-    <div class="brand">Ar3s</div>
+    <div class="brand">
+      <span class="brand-icon">◢</span>
+      <span>AR3S</span>
+      <span class="brand-pulse"></span>
+    </div>
     <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/simulator.html">Simulator</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
-      <a href="/pages/esp-custom.html">ESP Custom Flasher</a>
-      <a href="/pages/stm-flasher.html">STM Flasher</a>
+      <a href="/index.html" class="nav-link">Home</a>
+      <a href="/pages/ide.html" class="nav-link">IDE</a>
+      <a href="/pages/simulator.html" class="nav-link">Simulator</a>
+      <a href="/pages/esp-custom.html" class="nav-link">ESP Custom</a>
+      <a href="/pages/stm-flasher.html" class="nav-link">STM</a>
     </nav>
   </header>
 
   <main class="container">
-    <section class="hero">
-      <h1>Ar3s IDE Suite</h1>
-      <p>Write, simulate, and flash firmware — all from your browser.</p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content" id="heroContent">
+        <div class="hero-glitch">
+          <h1 class="hero-title">
+            <span class="glitch-text" data-text="AR3S ROBOTICS">AR3S ROBOTICS</span>
+          </h1>
+          <div class="hero-scanline"></div>
+        </div>
+        <p class="hero-subtitle">
+          <span class="typing-cursor">▌</span>
+          Next-generation firmware development suite
+        </p>
+        <p class="hero-description">
+          Write, simulate, and flash firmware — all from your browser at 
+          <span class="domain-highlight">ar3s-compiler.duckdns.org</span>
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Tools</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Possibilities</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Browser-Based</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-grid-bg"></div>
     </section>
 
-    <section class="grid">
-      <a class="card" href="/pages/ide.html">
-        <h2>Ar3s IDE v2</h2>
-        <p>Dark-themed code editor. Save, download, and prepare firmware artifacts.</p>
-      </a>
-      <a class="card" href="/pages/simulator.html">
-        <h2>Simulator</h2>
-        <p>Test circuits without hardware using Wokwi embed.</p>
-      </a>
-      <a class="card" href="/pages/esp-flasher.html">
-        <h2>ESP Flasher</h2>
-        <p>Flash ESP32/ESP8266 firmware via WebSerial/WebUSB.</p>
-      </a>
-      <a class="card" href="/pages/esp-custom.html">
-        <h2>ESP Custom Flasher</h2>
-        <p>Upload your own .bin and flash directly from the browser.</p>
-      </a>
-      <a class="card disabled" href="/pages/stm-flasher.html">
-        <h2>STM Flasher</h2>
-        <p>Coming soon: DFU/OpenOCD and local agent support.</p>
-      </a>
+    <!-- Scroll-Triggered Products Section -->
+    <section class="products-section" id="productsSection">
+      <h2 class="section-title">
+        <span class="title-bracket">[</span>
+        SYSTEM MODULES
+        <span class="title-bracket">]</span>
+      </h2>
+
+      <div class="products-grid">
+        <!-- Product 1: AR3S IDE -->
+        <div class="product-card" data-index="0">
+          <div class="card-border-glow"></div>
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <div class="card-status">
+              <span class="status-indicator active"></span>
+              <span class="status-text">ONLINE</span>
+            </div>
+          </div>
+          <h3 class="card-title">AR3S IDE</h3>
+          <p class="card-description">
+            Advanced code editor with dark theme. Save, download, and prepare firmware artifacts with precision.
+          </p>
+          <div class="card-tech-tags">
+            <span class="tech-tag">Monaco Editor</span>
+            <span class="tech-tag">AVR/ESP</span>
+          </div>
+          <a href="/pages/ide.html" class="card-link">
+            <span>LAUNCH MODULE</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Product 2: Simulator -->
+        <div class="product-card" data-index="1">
+          <div class="card-border-glow"></div>
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <div class="card-status">
+              <span class="status-indicator active"></span>
+              <span class="status-text">ONLINE</span>
+            </div>
+          </div>
+          <h3 class="card-title">Simulator</h3>
+          <p class="card-description">
+            Test circuits without hardware using Wokwi integration. Real-time simulation for rapid prototyping.
+          </p>
+          <div class="card-tech-tags">
+            <span class="tech-tag">Wokwi</span>
+            <span class="tech-tag">Arduino</span>
+          </div>
+          <a href="/pages/simulator.html" class="card-link">
+            <span>LAUNCH MODULE</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Product 3: ESP Custom Flasher -->
+        <div class="product-card" data-index="2">
+          <div class="card-border-glow"></div>
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div class="card-status">
+              <span class="status-indicator active"></span>
+              <span class="status-text">ONLINE</span>
+            </div>
+          </div>
+          <h3 class="card-title">ESP Custom Flasher</h3>
+          <p class="card-description">
+            Upload your own .bin firmware and flash directly to ESP32/ESP8266 via WebSerial API.
+          </p>
+          <div class="card-tech-tags">
+            <span class="tech-tag">WebSerial</span>
+            <span class="tech-tag">ESP32/ESP8266</span>
+          </div>
+          <a href="/pages/esp-custom.html" class="card-link">
+            <span>LAUNCH MODULE</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Product 4: STM Flasher -->
+        <div class="product-card" data-index="3">
+          <div class="card-border-glow"></div>
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-shield-halved"></i>
+            </div>
+            <div class="card-status">
+              <span class="status-indicator active"></span>
+              <span class="status-text">ONLINE</span>
+            </div>
+          </div>
+          <h3 class="card-title">STM Flasher</h3>
+          <p class="card-description">
+            Flash STM32 boards using WebSerial/WebUSB. Direct firmware deployment from your browser.
+          </p>
+          <div class="card-tech-tags">
+            <span class="tech-tag">WebSerial</span>
+            <span class="tech-tag">STM32</span>
+          </div>
+          <a href="/pages/stm-flasher.html" class="card-link">
+            <span>LAUNCH MODULE</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <small>© 2026 Ar3s • Served at https://ar3s-compiler.duckdns.org • Requires HTTPS and supported browsers (Chrome/Edge) for WebSerial/WebUSB.</small>
+    <div class="footer-content">
+      <div class="footer-left">
+        <span class="footer-copyright">© 2026 Ar3s</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/G3nosss" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://instagram.com/g3nos__" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+    </div>
   </footer>
+
+  <script src="/assets/homepage-animations.js"></script>
 </body>
 </html>

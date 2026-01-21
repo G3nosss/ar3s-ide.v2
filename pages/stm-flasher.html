@@ -2,26 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>STM Flasher (Preview)</title>
+  <title>STM Flasher | AR3S</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/homepage.css">
 </head>
 <body>
   <header class="header">
-    <div class="brand">Ar3s</div>
+    <div class="brand">AR3S</div>
     <nav>
       <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/pages/ide.html">IDE</a>
+      <a href="/pages/simulator.html">Simulator</a>
+      <a href="/pages/esp-custom.html">ESP Flasher</a>
+      <a href="/pages/stm-flasher.html">STM Flasher</a>
     </nav>
   </header>
 
   <main class="container">
-    <h1>STM Flasher</h1>
+    <h1>STM32 Flasher</h1>
+    
     <div class="panel">
-      <p>Planned: WebDFU flashing for DFU-capable boards and Local Agent for broader STM32 support.</p>
-      <p class="muted">Browser flashing requires DFU bootloader + HTTPS. Otherwise use the Local Agent (coming soon).</p>
+      <p>Flash firmware to STM32 microcontrollers via WebUSB (DFU mode) or WebSerial. Requires HTTPS (ar3s-compiler.duckdns.org) and Chrome/Edge.</p>
+      
+      <div style="margin-top: 1.5rem;">
+        <h3 style="color: var(--neon-cyan); margin-bottom: 1rem;">Connection Method</h3>
+        
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="radio" name="connectionMethod" value="dfu" checked style="margin-right: 0.5rem;">
+            <span>WebUSB (DFU Mode)</span>
+          </label>
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="radio" name="connectionMethod" value="serial" style="margin-right: 0.5rem;">
+            <span>WebSerial (UART Bootloader)</span>
+          </label>
+        </div>
+        
+        <div id="dfuOptions" style="margin-bottom: 1.5rem;">
+          <p class="muted" style="margin-bottom: 0.5rem;">
+            <strong>DFU Mode Requirements:</strong><br>
+            • Put STM32 in DFU mode (BOOT0=HIGH, reset)<br>
+            • Connect via USB<br>
+            • Supports .bin and .hex firmware files
+          </p>
+        </div>
+        
+        <div id="serialOptions" style="margin-bottom: 1.5rem; display: none;">
+          <p class="muted" style="margin-bottom: 0.5rem;">
+            <strong>Serial Bootloader Requirements:</strong><br>
+            • Put STM32 in bootloader mode (BOOT0=HIGH, reset)<br>
+            • Connect UART (TX, RX, GND) via USB-Serial adapter<br>
+            • Supports .bin and .hex firmware files
+          </p>
+          
+          <div style="margin-top: 1rem;">
+            <label for="baudRate">Baud Rate</label><br>
+            <select id="baudRate" class="board-select">
+              <option value="115200" selected>115200</option>
+              <option value="57600">57600</option>
+              <option value="38400">38400</option>
+              <option value="19200">19200</option>
+              <option value="9600">9600</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="firmwareFile">Firmware File (.bin or .hex)</label><br>
+            <input id="firmwareFile" type="file" accept=".bin,.hex" style="padding: 0.5rem; background: var(--bg-panel); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: 4px;">
+          </div>
+          
+          <div>
+            <label for="flashAddress">Flash Address (hex)</label><br>
+            <input id="flashAddress" type="text" value="0x08000000" style="width: 150px; padding: 0.5rem; background: var(--bg-panel); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: 4px;">
+            <br><small class="muted">Standard: 0x08000000</small>
+          </div>
+        </div>
+        
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button id="connectBtn" class="btn">Connect Device</button>
+          <button id="flashBtn" class="btn" disabled>Flash Firmware</button>
+          <button id="verifyBtn" class="btn" disabled>Verify</button>
+          <button id="disconnectBtn" class="btn" disabled>Disconnect</button>
+        </div>
+      </div>
+      
+      <div id="status" style="margin-top: 1rem;" class="muted"></div>
+      
+      <div id="terminalLog" class="terminal-log" style="margin-top: 1.5rem; display: none;">
+        <div id="logContent"></div>
+      </div>
+      
+      <div id="progressContainer" style="margin-top: 1.5rem; display: none;">
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 4px; overflow: hidden; height: 30px; position: relative;">
+          <div id="progressBar" style="background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+          <div id="progressText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; color: var(--text-primary); text-shadow: 0 0 5px rgba(0,0,0,0.8);">0%</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel" style="margin-top: 2rem;">
+      <h3 style="color: var(--neon-cyan); margin-bottom: 1rem;">Quick Guide</h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">1. DFU Mode (WebUSB)</h4>
+          <p class="muted" style="font-size: 0.9rem;">
+            • Connect STM32 via USB<br>
+            • Set BOOT0 to HIGH (3.3V)<br>
+            • Press RESET button<br>
+            • Click "Connect Device"
+          </p>
+        </div>
+        
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">2. Serial Mode (WebSerial)</h4>
+          <p class="muted" style="font-size: 0.9rem;">
+            • Connect UART adapter<br>
+            • Set BOOT0 to HIGH<br>
+            • Press RESET button<br>
+            • Select baud rate & connect
+          </p>
+        </div>
+        
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">3. Flash Firmware</h4>
+          <p class="muted" style="font-size: 0.9rem;">
+            • Choose .bin or .hex file<br>
+            • Set flash address<br>
+            • Click "Flash Firmware"<br>
+            • Wait for completion
+          </p>
+        </div>
+      </div>
     </div>
   </main>
+
+  <script src="/assets/stm-flasher.js"></script>
 </body>
 </html>

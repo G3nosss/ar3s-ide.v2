@@ -18,4 +18,4 @@ The site requires the following components:
 - Docker container for Arduino compilation
 
 **Repository:** https://github.com/G3nosss/ar3s-ide.v2  
-**License:** AGPL-3.0
+**License:** Proprietary - All Rights Reserved

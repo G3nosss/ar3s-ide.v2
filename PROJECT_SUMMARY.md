@@ -23,4 +23,4 @@ The deployed site includes:
 - **Frontend:** HTML/JavaScript
 - **Backend:** Node.js + Express
 - **Build System:** Docker + arduino-cli
-- **License:** AGPL-3.0
+- **License:** Proprietary - All Rights Reserved

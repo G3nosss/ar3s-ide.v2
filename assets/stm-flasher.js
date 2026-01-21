@@ -147,15 +147,15 @@ function parseIntelHex(hexText) {
   for (const line of lines) {
     if (line.length < 11) continue;
     
-    const byteCount = parseInt(line.substr(1, 2), 16);
-    const address = parseInt(line.substr(3, 4), 16);
-    const recordType = parseInt(line.substr(7, 2), 16);
-    const dataStr = line.substr(9, byteCount * 2);
+    const byteCount = parseInt(line.substring(1, 3), 16);
+    const address = parseInt(line.substring(3, 7), 16);
+    const recordType = parseInt(line.substring(7, 9), 16);
+    const dataStr = line.substring(9, 9 + byteCount * 2);
     
     if (recordType === 0x00) {
       // Data record
       for (let i = 0; i < byteCount; i++) {
-        const byte = parseInt(dataStr.substr(i * 2, 2), 16);
+        const byte = parseInt(dataStr.substring(i * 2, i * 2 + 2), 16);
         data[baseAddress + address + i] = byte;
       }
     } else if (recordType === 0x04) {
@@ -167,7 +167,17 @@ function parseIntelHex(hexText) {
     }
   }
   
-  return new Uint8Array(data);
+  // Fill gaps with 0xFF (typical flash erased state)
+  const maxAddress = Math.max(...Object.keys(data).map(Number));
+  const result = new Uint8Array(maxAddress + 1);
+  result.fill(0xFF);
+  for (let i = 0; i < result.length; i++) {
+    if (data[i] !== undefined) {
+      result[i] = data[i];
+    }
+  }
+  
+  return result;
 }
 
 // Connect to device
@@ -323,11 +333,13 @@ async function flashFirmware() {
 // Flash via DFU
 async function flashViaDFU(address) {
   logger.info('Using DFU protocol...');
-  logger.warning('DFU flashing is a simplified implementation');
-  logger.info('For full DFU support, consider using dedicated tools');
+  logger.warning('⚠️ DEMONSTRATION MODE - NOT ACTUAL FLASHING');
+  logger.warning('This is a simplified implementation for UI/UX demonstration');
+  logger.warning('For actual DFU flashing, use esptool or dfu-util');
+  logger.info('A complete DFU protocol implementation requires USB control transfers');
   
   // Simplified DFU download command
-  // This is a basic implementation - full DFU protocol is complex
+  // This is a DEMONSTRATION implementation - full DFU protocol requires proper USB communication
   
   const chunkSize = 1024;
   const totalChunks = Math.ceil(firmwareData.length / chunkSize);

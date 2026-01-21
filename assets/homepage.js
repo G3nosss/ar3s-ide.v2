@@ -191,12 +191,23 @@
       });
     }
 
-    setInterval(draw, 50);
+    const intervalId = setInterval(draw, 50);
 
+    // Debounced resize handler
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }, 250);
     });
+    
+    // Cleanup function (can be called if needed)
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(resizeTimeout);
+    };
   }
 
   // Smooth scroll for navigation

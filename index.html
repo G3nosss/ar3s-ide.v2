@@ -2,56 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Ar3s | Tech IDE Suite</title>
+  <title>Ar3s | Futuristic Tech IDE Suite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/home-styles.css">
 </head>
 <body>
-  <header class="header">
-    <div class="brand">Ar3s</div>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/simulator.html">Simulator</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
-      <a href="/pages/esp-custom.html">ESP Custom Flasher</a>
-      <a href="/pages/stm-flasher.html">STM Flasher</a>
-    </nav>
-  </header>
+  <div id="root">
+    <!-- Scanning line effect -->
+    <div class="scan-line"></div>
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">AR3S</div>
+      <nav class="nav">
+        <a href="/index.html">Home</a>
+        <a href="/pages/ide.html">IDE</a>
+        <a href="/pages/simulator.html">Simulator</a>
+        <a href="/pages/esp-flasher.html">ESP Flasher</a>
+        <a href="/pages/esp-custom.html">Custom Flasher</a>
+        <a href="/pages/stm-flasher.html">STM Flasher</a>
+      </nav>
+    </header>
 
-  <main class="container">
+    <!-- Hero Section -->
     <section class="hero">
-      <h1>Ar3s IDE Suite</h1>
-      <p>Write, simulate, and flash firmware — all from your browser.</p>
+      <div class="hero-accent">&gt; SYSTEM ONLINE</div>
+      <h1 class="hero-title glitch-hover">AR3S IDE SUITE</h1>
+      <p class="hero-subtitle">
+        Advanced Robotics Engineering System • Write, simulate, and flash firmware — 
+        all from your browser with cutting-edge technology.
+      </p>
+      <div style="margin-top: 2rem;">
+        <div style="display: inline-block; padding: 1rem 2rem; border: 2px solid #00ffff; border-radius: 4px; background: rgba(0, 255, 255, 0.1); color: #00ffff; font-size: 0.9rem; letter-spacing: 0.1em; font-weight: bold;">
+          ⚡ POWERED BY WEB SERIAL & WEB USB
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <a class="card" href="/pages/ide.html">
-        <h2>Ar3s IDE v2</h2>
-        <p>Dark-themed code editor. Save, download, and prepare firmware artifacts.</p>
-      </a>
-      <a class="card" href="/pages/simulator.html">
-        <h2>Simulator</h2>
-        <p>Test circuits without hardware using Wokwi embed.</p>
-      </a>
-      <a class="card" href="/pages/esp-flasher.html">
-        <h2>ESP Flasher</h2>
-        <p>Flash ESP32/ESP8266 firmware via WebSerial/WebUSB.</p>
-      </a>
-      <a class="card" href="/pages/esp-custom.html">
-        <h2>ESP Custom Flasher</h2>
-        <p>Upload your own .bin and flash directly from the browser.</p>
-      </a>
-      <a class="card disabled" href="/pages/stm-flasher.html">
-        <h2>STM Flasher</h2>
-        <p>Coming soon: DFU/OpenOCD and local agent support.</p>
-      </a>
-    </section>
-  </main>
+    <!-- Products Section -->
+    <section class="products-section">
+      <h2 class="section-title">&lt; TECH ARSENAL /&gt;</h2>
+      <div class="products-grid">
+        <a href="/pages/ide.html" class="product-card">
+          <div class="hud-corner top-left"></div>
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div>
+          <div class="hud-corner bottom-right"></div>
+          <div class="product-card-icon">⌨</div>
+          <h3 class="product-card-title">AR3S IDE</h3>
+          <p class="product-card-description">Professional dark-themed code editor with syntax highlighting. Save, download, and prepare firmware artifacts with ease.</p>
+        </a>
 
-  <footer class="footer">
-    <small>© 2026 Ar3s • Served at https://ar3s-compiler.duckdns.org • Requires HTTPS and supported browsers (Chrome/Edge) for WebSerial/WebUSB.</small>
-  </footer>
+        <a href="/pages/simulator.html" class="product-card">
+          <div class="hud-corner top-left"></div>
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div>
+          <div class="hud-corner bottom-right"></div>
+          <div class="product-card-icon">🔬</div>
+          <h3 class="product-card-title">Simulator</h3>
+          <p class="product-card-description">Test circuits without hardware using advanced Wokwi integration. Debug and validate before deployment.</p>
+        </a>
+
+        <a href="/pages/esp-custom.html" class="product-card">
+          <div class="hud-corner top-left"></div>
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div>
+          <div class="hud-corner bottom-right"></div>
+          <div class="product-card-icon">⚡</div>
+          <h3 class="product-card-title">ESP Custom Flasher</h3>
+          <p class="product-card-description">Upload your own .bin firmware and flash ESP32/ESP8266 directly from the browser via WebSerial API.</p>
+        </a>
+
+        <a href="/pages/stm-flasher.html" class="product-card">
+          <div class="hud-corner top-left"></div>
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div>
+          <div class="hud-corner bottom-right"></div>
+          <div class="product-card-icon">🤖</div>
+          <h3 class="product-card-title">STM Flasher</h3>
+          <p class="product-card-description">Flash STM32 boards with WebUSB/WebSerial. Real-time status logs and reliable connection handling.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-text">© 2026 Ar3s</div>
+        <div class="footer-icons">
+          <a href="https://github.com/G3nosss" target="_blank" rel="noopener noreferrer" class="footer-icon" title="GitHub">
+            ⚙
+          </a>
+          <a href="https://instagram.com/g3nosss" target="_blank" rel="noopener noreferrer" class="footer-icon" title="Instagram">
+            📷
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Simple JS for animations without React/Framer -->
+  <script src="/assets/home-animations.js"></script>
 </body>
 </html>

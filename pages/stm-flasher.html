@@ -2,9 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>STM Flasher (Preview)</title>
+  <title>STM Flasher | Ar3s</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/assets/styles.css">
+  <style>
+    .terminal-log {
+      background: #000;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #0f0;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .terminal-log .error { color: #f55; }
+    .terminal-log .success { color: #0f0; }
+    .terminal-log .info { color: #0ff; }
+    .terminal-log .warning { color: #ff0; }
+    .progress-bar {
+      width: 100%;
+      height: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 1rem;
+      display: none;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -12,16 +53,42 @@
     <nav>
       <a href="/index.html">Home</a>
       <a href="/pages/ide.html">Ar3s IDE v2</a>
+      <a href="/pages/simulator.html">Simulator</a>
       <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/pages/esp-custom.html">ESP Custom</a>
     </nav>
   </header>
 
   <main class="container">
-    <h1>STM Flasher</h1>
+    <h1>STM32 Flasher</h1>
     <div class="panel">
-      <p>Planned: WebDFU flashing for DFU-capable boards and Local Agent for broader STM32 support.</p>
-      <p class="muted">Browser flashing requires DFU bootloader + HTTPS. Otherwise use the Local Agent (coming soon).</p>
+      <p>Flash STM32 boards with WebSerial support. Supports DFU bootloader mode.</p>
+      <p class="muted">Requires HTTPS and Chrome/Edge browser. Board must be in DFU mode (BOOT0=1).</p>
+
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin-top:1rem;">
+        <div>
+          <label for="binfile">Firmware (.bin)</label><br>
+          <input id="binfile" type="file" accept=".bin">
+        </div>
+        <div>
+          <label for="address">Flash Address (hex)</label><br>
+          <input id="address" type="text" value="0x08000000" style="width:140px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem;">
+          <br><small class="muted">Default: 0x08000000</small>
+        </div>
+        <button id="connectBtn" class="btn">Connect Device</button>
+        <button id="flashBtn" class="btn" disabled>Flash Firmware</button>
+      </div>
+
+      <div id="status" style="margin-top:0.5rem;" class="muted"></div>
+
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill">0%</div>
+      </div>
+
+      <div id="terminalLog" class="terminal-log"></div>
     </div>
   </main>
+
+  <script type="module" src="/assets/stm-flasher.js"></script>
 </body>
 </html>

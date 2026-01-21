@@ -2,9 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>ESP Custom Flasher</title>
+  <title>ESP Custom Flasher | Ar3s</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/assets/styles.css">
+  <style>
+    .terminal-log {
+      background: #000;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #0f0;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .terminal-log .error { color: #f55; }
+    .terminal-log .success { color: #0f0; }
+    .terminal-log .info { color: #0ff; }
+    .terminal-log .warning { color: #ff0; }
+  </style>
   <!-- esp-web-tools web component -->
   <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js"></script>
 </head>
@@ -16,26 +36,28 @@
       <a href="/pages/ide.html">Ar3s IDE v2</a>
       <a href="/pages/simulator.html">Simulator</a>
       <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/pages/stm-flasher.html">STM Flasher</a>
     </nav>
   </header>
 
   <main class="container">
     <h1>ESP Custom Flasher</h1>
     <div class="panel">
-      <p>Flash a user-selected firmware .bin to ESP32/ESP8266 via WebSerial/WebUSB. Requires HTTPS (ar3s-compiler.duckdns.org) and Chrome/Edge.</p>
+      <p>Flash user-selected firmware .bin to ESP32/ESP8266 via WebSerial/WebUSB.</p>
+      <p class="muted">Requires HTTPS and Chrome/Edge browser with WebSerial support.</p>
 
-      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin-top:1rem;">
         <div>
           <label for="chip">Chip Family</label><br>
-          <select id="chip">
+          <select id="chip" class="board-select">
             <option value="ESP32" selected>ESP32</option>
             <option value="ESP8266">ESP8266</option>
           </select>
         </div>
         <div>
           <label for="offset">Offset (hex)</label><br>
-          <input id="offset" type="text" value="0x10000" style="width:120px">
-          <small class="muted">Typical app offset: ESP32 0x10000, ESP8266 0x00000</small>
+          <input id="offset" type="text" value="0x10000" style="width:120px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem;">
+          <br><small class="muted">Typical: ESP32 0x10000, ESP8266 0x00000</small>
         </div>
         <div>
           <label for="binfile">Firmware (.bin)</label><br>
@@ -50,6 +72,8 @@
         <!-- Install button uses generated manifest with blob URLs -->
         <esp-web-install-button id="installBtn"></esp-web-install-button>
       </div>
+
+      <div id="terminalLog" class="terminal-log" style="display:none;"></div>
     </div>
   </main>
 

@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Stats counter animation
-  const animateCounter = (element, target, duration = 2000) => {
+  const animateCounter = (element, target, isPercentage = false, duration = 2000) => {
     const start = 0;
     const increment = target / (duration / 16);
     let current = start;
@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const timer = setInterval(() => {
       current += increment;
       if (current >= target) {
-        element.textContent = target === 100 ? '100%' : target === Infinity ? '∞' : target;
+        element.textContent = isPercentage ? '100%' : target === Infinity ? '∞' : target;
         clearInterval(timer);
       } else {
-        element.textContent = Math.floor(current);
+        element.textContent = isPercentage ? Math.floor(current) + '%' : Math.floor(current);
       }
     }, 16);
   };
@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         statValues.forEach((stat, index) => {
           const text = stat.textContent.trim();
           if (text === '4') {
-            setTimeout(() => animateCounter(stat, 4, 1000), index * 200);
+            setTimeout(() => animateCounter(stat, 4, false, 1000), index * 200);
           } else if (text === '100%') {
             setTimeout(() => {
               stat.textContent = '0%';
-              animateCounter(stat, 100, 1500);
+              animateCounter(stat, 100, true, 1500);
             }, index * 200);
           }
         });

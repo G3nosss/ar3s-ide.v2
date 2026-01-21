@@ -59,7 +59,6 @@ function cleanupBlobUrls() {
   if (currentManifestUrl) {
     try { 
       URL.revokeObjectURL(currentManifestUrl);
-      log('Revoked manifest blob URL', 'info');
     } catch (err) {
       log(`Failed to revoke manifest URL: ${err.message}`, 'warning');
     }
@@ -68,7 +67,6 @@ function cleanupBlobUrls() {
   if (currentFwUrl) {
     try { 
       URL.revokeObjectURL(currentFwUrl);
-      log('Revoked firmware blob URL', 'info');
     } catch (err) {
       log(`Failed to revoke firmware URL: ${err.message}`, 'warning');
     }

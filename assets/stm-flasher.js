@@ -208,10 +208,11 @@ async function connectDevice() {
     try {
       log('Requesting USB device access...', 'info');
       
-      // Request STM32 DFU device (vendor ID 0x0483 is STMicroelectronics)
+      // Request STM32 DFU device
+      // Vendor ID 0x0483 is STMicroelectronics (covers most STM32 devices in DFU mode)
       device = await navigator.usb.requestDevice({
         filters: [
-          { vendorId: 0x0483 } // STMicroelectronics
+          { vendorId: 0x0483 } // STMicroelectronics STM32 devices
         ]
       });
       
@@ -259,8 +260,8 @@ async function connectDevice() {
       flashBtn.disabled = true;
     }
   } else {
-    log('WebSerial protocol not yet implemented for STM32', 'warning');
-    log('Please use WebUSB (DFU) protocol', 'info');
+    log('WebSerial protocol is not supported for STM32 DFU', 'warning');
+    log('STM32 DFU requires WebUSB. Please use WebUSB (DFU) protocol', 'info');
   }
 }
 

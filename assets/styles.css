@@ -1,21 +1,36 @@
 :root {
-  --bg: #0b0f14;
-  --panel: #11151b;
-  --text: #c9d1d9;
+  --bg: #0a0e14;
+  --panel: #0f1318;
+  --text: #e3e8ef;
   --muted: #8b949e;
   --accent: #00d9ff;
   --accent2: #7c4dff;
-  --border: #1f2630;
+  --border: #1a2332;
+  --glow: rgba(0, 217, 255, 0.5);
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(180deg, #0b0f14, #0e1218);
+  margin: 0; 
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: #0a0e14;
+  background-image: 
+    linear-gradient(180deg, rgba(0, 217, 255, 0.03) 0%, transparent 100%),
+    repeating-linear-gradient(0deg, rgba(0, 217, 255, 0.03) 0px, transparent 2px, transparent 4px);
   color: var(--text);
+  min-height: 100vh;
 }
 .header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--panel);
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  padding: 1rem 1.25rem; 
+  border-bottom: 2px solid var(--border); 
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 .header nav a { color: var(--muted); margin-left: 1rem; text-decoration: none; }
 .header nav a:hover { color: var(--text); }

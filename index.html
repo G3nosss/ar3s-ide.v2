@@ -6,52 +6,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/home.css">
 </head>
 <body>
   <header class="header">
-    <div class="brand">Ar3s</div>
+    <div class="brand">
+      <span class="brand-text">Ar3s</span>
+      <span class="brand-subtitle">ROBOTICS INTERFACE</span>
+    </div>
     <nav>
-      <a href="/index.html">Home</a>
-      <a href="/pages/ide.html">Ar3s IDE v2</a>
-      <a href="/pages/simulator.html">Simulator</a>
-      <a href="/pages/esp-flasher.html">ESP Flasher</a>
-      <a href="/pages/esp-custom.html">ESP Custom Flasher</a>
-      <a href="/pages/stm-flasher.html">STM Flasher</a>
+      <a href="/index.html" class="nav-link">Home</a>
+      <a href="/pages/ide.html" class="nav-link">IDE</a>
+      <a href="/pages/simulator.html" class="nav-link">Simulator</a>
+      <a href="/pages/esp-custom.html" class="nav-link">ESP Flasher</a>
+      <a href="/pages/stm-flasher.html" class="nav-link">STM Flasher</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="hero">
-      <h1>Ar3s IDE Suite</h1>
-      <p>Write, simulate, and flash firmware — all from your browser.</p>
+      <div class="hero-content">
+        <div class="hero-badge">NEXT-GEN DEVELOPMENT SUITE</div>
+        <h1 class="hero-title">
+          <span class="glitch" data-text="Ar3s IDE Suite">Ar3s IDE Suite</span>
+        </h1>
+        <p class="hero-subtitle">Write, simulate, and flash firmware — directly from your browser.</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value">4</span>
+            <span class="stat-label">TOOLS</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">BROWSER-BASED</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">∞</span>
+            <span class="stat-label">POSSIBILITIES</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <a class="card" href="/pages/ide.html">
-        <h2>Ar3s IDE v2</h2>
-        <p>Dark-themed code editor. Save, download, and prepare firmware artifacts.</p>
-      </a>
-      <a class="card" href="/pages/simulator.html">
-        <h2>Simulator</h2>
-        <p>Test circuits without hardware using Wokwi embed.</p>
-      </a>
-      <a class="card" href="/pages/esp-flasher.html">
-        <h2>ESP Flasher</h2>
-        <p>Flash ESP32/ESP8266 firmware via WebSerial/WebUSB.</p>
-      </a>
-      <a class="card" href="/pages/esp-custom.html">
-        <h2>ESP Custom Flasher</h2>
-        <p>Upload your own .bin and flash directly from the browser.</p>
-      </a>
-      <a class="card disabled" href="/pages/stm-flasher.html">
-        <h2>STM Flasher</h2>
-        <p>Coming soon: DFU/OpenOCD and local agent support.</p>
-      </a>
+    <section class="products-section">
+      <h2 class="section-title">
+        <span class="section-title-line"></span>
+        SYSTEM MODULES
+        <span class="section-title-line"></span>
+      </h2>
+      
+      <div class="products-grid">
+        <a class="product-card" href="/pages/ide.html" data-index="0">
+          <div class="card-glow"></div>
+          <div class="card-number">01</div>
+          <div class="card-content">
+            <h3 class="card-title">AR3S IDE</h3>
+            <p class="card-description">Advanced code editor with dark theme. Save, download, and prepare firmware artifacts with precision.</p>
+            <div class="card-footer">
+              <span class="card-status">OPERATIONAL</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="product-card" href="/pages/simulator.html" data-index="1">
+          <div class="card-glow"></div>
+          <div class="card-number">02</div>
+          <div class="card-content">
+            <h3 class="card-title">SIMULATOR</h3>
+            <p class="card-description">Test circuits without hardware using advanced Wokwi integration. Real-time simulation capabilities.</p>
+            <div class="card-footer">
+              <span class="card-status">OPERATIONAL</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="product-card" href="/pages/esp-custom.html" data-index="2">
+          <div class="card-glow"></div>
+          <div class="card-number">03</div>
+          <div class="card-content">
+            <h3 class="card-title">ESP CUSTOM FLASHER</h3>
+            <p class="card-description">Flash ESP32/ESP8266 firmware via WebSerial. Upload custom binaries and flash directly from the browser.</p>
+            <div class="card-footer">
+              <span class="card-status">OPERATIONAL</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="product-card" href="/pages/stm-flasher.html" data-index="3">
+          <div class="card-glow"></div>
+          <div class="card-number">04</div>
+          <div class="card-content">
+            <h3 class="card-title">STM FLASHER</h3>
+            <p class="card-description">Flash STM32 boards via WebUSB/WebSerial. DFU bootloader support with real-time status monitoring.</p>
+            <div class="card-footer">
+              <span class="card-status">OPERATIONAL</span>
+              <span class="card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <small>© 2026 Ar3s • Served at https://ar3s-compiler.duckdns.org • Requires HTTPS and supported browsers (Chrome/Edge) for WebSerial/WebUSB.</small>
+    <div class="footer-content">
+      <span class="footer-copyright">© 2026 Ar3s</span>
+      <div class="footer-social">
+        <a href="https://github.com/G3nosss" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        </a>
+        <a href="https://instagram.com/g3nosss" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+      </div>
+    </div>
   </footer>
+
+  <script type="module" src="/assets/home.js"></script>
 </body>
 </html>

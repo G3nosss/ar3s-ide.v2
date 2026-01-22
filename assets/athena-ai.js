@@ -25,12 +25,14 @@ function initAthenaAI() {
   // Open modal
   aiAssistBtn.addEventListener('click', () => {
     modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
     aiPrompt.focus();
   });
 
   // Close modal
   closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
     resetModal();
   });
 
@@ -38,6 +40,16 @@ function initAthenaAI() {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       modal.style.display = 'none';
+      document.body.style.overflow = '';
+      resetModal();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
       resetModal();
     }
   });
@@ -106,7 +118,12 @@ function initAthenaAI() {
       aiOutput.style.display = 'block';
       
     } catch (error) {
-      showError(error.message);
+      // Handle network errors separately from API errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        showError('Network error: Unable to reach the AI service. Please check your connection.');
+      } else {
+        showError(error.message || 'An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }

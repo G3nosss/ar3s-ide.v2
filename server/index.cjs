@@ -5,8 +5,18 @@ const path = require("path");
 const app = express();
 app.use(express.json());
 
-// Serve static files from the root directory
-app.use(express.static(path.join(__dirname, '..')));
+// Serve static files from specific directories only
+app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
+app.use('/pages', express.static(path.join(__dirname, '..', 'pages')));
+app.use('/firmware', express.static(path.join(__dirname, '..', 'firmware')));
+
+// Serve root HTML files
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
 
 const FIRMWARE_DIR = "/var/www/ar3s/firmware/avr/";
 const SKETCH_DIR = "/tmp/test-sketch/";

@@ -20,6 +20,31 @@ export function getEditorValue() {
 }
 
 function setupMonaco() {
+  // Check if window.require is available
+  if (typeof window.require === 'undefined') {
+    console.warn('Monaco Editor loader not available. Editor will not be initialized.');
+    // Create a fallback editor object
+    window._ar3sEditor = {
+      getValue: () => initialSketch,
+      setValue: (value) => { console.log('Fallback editor setValue:', value); }
+    };
+    
+    // Still set up download and clear buttons with fallback
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const code = window._ar3sEditor.getValue();
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sketch.ino';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => window._ar3sEditor.setValue(''));
+    return;
+  }
+  
   window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
   window.require(['vs/editor/editor.main'], () => {
     window._ar3sEditor = monaco.editor.create(document.getElementById('editor'), {

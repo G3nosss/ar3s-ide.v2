@@ -46,11 +46,11 @@
   </main>
 
   <!-- AI Modal -->
-  <div id="aiModal" class="ai-modal" style="display:none;">
+  <div id="aiModal" class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title" style="display:none;">
     <div class="ai-modal-content">
       <div class="ai-modal-header">
-        <h2>⚡ Athena AI Assistant</h2>
-        <button id="closeAiModal" class="close-btn">&times;</button>
+        <h2 id="ai-modal-title">⚡ Athena AI Assistant</h2>
+        <button id="closeAiModal" class="close-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="ai-modal-body">
         <div class="ai-mode-selector">

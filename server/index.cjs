@@ -1,8 +1,12 @@
 const fs = require("fs");
 const { exec } = require("child_process");
 const express = require("express");
+const path = require("path");
 const app = express();
 app.use(express.json());
+
+// Serve static files from the parent directory
+app.use(express.static(path.join(__dirname, '..')));
 
 const FIRMWARE_DIR = "/var/www/ar3s/firmware/avr/";
 const SKETCH_DIR = "/tmp/test-sketch/";
@@ -126,7 +130,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   
   Serial.println("System initialized");
-  Serial.println("Prompt: ${prompt}");
+  Serial.println(\`Prompt: ${prompt}\`);
 }
 
 void loop() {

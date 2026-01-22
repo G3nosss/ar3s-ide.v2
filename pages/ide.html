@@ -36,6 +36,7 @@
         <button id="buildAvrBtn">Build (AVR)</button>
         <button id="uploadArduinoBtn">Upload to Arduino</button>
         <button id="clearBtn">Clear</button>
+        <button id="aiBtn" class="ai-btn">⚡ Athena AI</button>
       </div>
 
       <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
@@ -44,8 +45,55 @@
     </div>
   </main>
 
+  <!-- AI Modal -->
+  <div id="aiModal" class="ai-modal" style="display:none;">
+    <div class="ai-modal-content">
+      <div class="ai-modal-header">
+        <h2>⚡ Athena AI Assistant</h2>
+        <button id="closeAiModal" class="close-btn">&times;</button>
+      </div>
+      <div class="ai-modal-body">
+        <div class="ai-mode-selector">
+          <label>
+            <input type="radio" name="aiMode" value="generate" checked>
+            <span>Generate Code</span>
+          </label>
+          <label>
+            <input type="radio" name="aiMode" value="debug">
+            <span>Debug Code</span>
+          </label>
+        </div>
+        <div class="ai-input-section">
+          <label for="aiPrompt">What would you like to do?</label>
+          <textarea id="aiPrompt" class="ai-prompt" placeholder="e.g., Create a blink program with 2 LEDs on pins 12 and 13"></textarea>
+          <button id="generateBtn" class="generate-btn">Generate with AI</button>
+        </div>
+        <div id="aiLoading" class="ai-loading" style="display:none;">
+          <div class="loading-spinner"></div>
+          <p>Athena is thinking...</p>
+        </div>
+        <div id="aiError" class="ai-error" style="display:none;"></div>
+        <div id="aiResult" class="ai-result" style="display:none;">
+          <h3>Generated Code:</h3>
+          <pre id="generatedCode" class="generated-code"></pre>
+          <div class="ai-actions">
+            <button id="putInIdeBtn" class="put-in-ide-btn">Put in IDE</button>
+            <button id="generatePinoutBtn" class="generate-pinout-btn">Generate Pinout Diagram</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Notification -->
+  <div id="successNotification" class="success-notification" style="display:none;">
+    <span class="success-icon">✓</span>
+    <span class="success-message">Code injected into IDE successfully!</span>
+  </div>
+
   <script type="module" src="/assets/ide.js"></script>
   <script type="module" src="/assets/build-avr.js"></script>
+  <script type="module" src="/assets/athena-ai.js"></script>
   <script type="module">
     import { getEditorValue } from '/assets/ide.js';
     import { initializeUpload } from '/assets/upload-arduino.js';

@@ -199,7 +199,10 @@ function visualizeWiringDiagram(wiringData) {
   container.innerHTML = ''; // Clear previous diagram
   
   if (!wiringData || wiringData.length === 0) {
-    container.innerHTML = '<p class="no-data">No wiring diagram data available</p>';
+    const noDataMsg = document.createElement('p');
+    noDataMsg.className = 'no-data';
+    noDataMsg.textContent = 'No wiring diagram data available';
+    container.appendChild(noDataMsg);
     return;
   }
 
@@ -215,23 +218,61 @@ function visualizeWiringDiagram(wiringData) {
     connectionDiv.className = 'connection-item';
     connectionDiv.style.animationDelay = `${index * 0.1}s`;
     
-    let html = `
-      <div class="connection-line" style="border-color: ${connection.color || '#00d9ff'}">
-        <div class="connection-source">${connection.source}</div>
-        ${connection.intermediate_component ? `
-          <div class="intermediate-component">
-            <span class="component-icon">⚡</span>
-            <span class="component-label">${connection.intermediate_component.type}</span>
-            <span class="component-value">${connection.intermediate_component.value || ''}</span>
-          </div>
-        ` : ''}
-        <div class="connection-arrow">→</div>
-        <div class="connection-target">${connection.target}</div>
-      </div>
-      <div class="connection-label" style="color: ${connection.color || '#00d9ff'}">${connection.label}</div>
-    `;
+    // Create elements safely without innerHTML
+    const connectionLine = document.createElement('div');
+    connectionLine.className = 'connection-line';
+    connectionLine.style.borderColor = connection.color || '#00d9ff';
     
-    connectionDiv.innerHTML = html;
+    // Source
+    const sourceDiv = document.createElement('div');
+    sourceDiv.className = 'connection-source';
+    sourceDiv.textContent = connection.source;
+    connectionLine.appendChild(sourceDiv);
+    
+    // Intermediate component if present
+    if (connection.intermediate_component) {
+      const componentDiv = document.createElement('div');
+      componentDiv.className = 'intermediate-component';
+      
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'component-icon';
+      iconSpan.textContent = '⚡';
+      
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'component-label';
+      labelSpan.textContent = connection.intermediate_component.type;
+      
+      const valueSpan = document.createElement('span');
+      valueSpan.className = 'component-value';
+      valueSpan.textContent = connection.intermediate_component.value || '';
+      
+      componentDiv.appendChild(iconSpan);
+      componentDiv.appendChild(labelSpan);
+      componentDiv.appendChild(valueSpan);
+      connectionLine.appendChild(componentDiv);
+    }
+    
+    // Arrow
+    const arrowDiv = document.createElement('div');
+    arrowDiv.className = 'connection-arrow';
+    arrowDiv.textContent = '→';
+    connectionLine.appendChild(arrowDiv);
+    
+    // Target
+    const targetDiv = document.createElement('div');
+    targetDiv.className = 'connection-target';
+    targetDiv.textContent = connection.target;
+    connectionLine.appendChild(targetDiv);
+    
+    connectionDiv.appendChild(connectionLine);
+    
+    // Label
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'connection-label';
+    labelDiv.style.color = connection.color || '#00d9ff';
+    labelDiv.textContent = connection.label;
+    connectionDiv.appendChild(labelDiv);
+    
     diagramHtml.appendChild(connectionDiv);
   });
   
@@ -262,10 +303,21 @@ function putCodeInIDE() {
 
 function showError(message) {
   const aiError = document.getElementById('aiError');
-  aiError.innerHTML = `
-    <div class="error-icon">⚠</div>
-    <div class="error-text">${message}</div>
-  `;
+  
+  // Clear previous content
+  aiError.innerHTML = '';
+  
+  // Create error elements safely
+  const errorIcon = document.createElement('div');
+  errorIcon.className = 'error-icon';
+  errorIcon.textContent = '⚠';
+  
+  const errorText = document.createElement('div');
+  errorText.className = 'error-text';
+  errorText.textContent = message; // Use textContent to prevent XSS
+  
+  aiError.appendChild(errorIcon);
+  aiError.appendChild(errorText);
   aiError.style.display = 'block';
   
   // Auto-hide after 5 seconds

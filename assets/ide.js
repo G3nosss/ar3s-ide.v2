@@ -20,6 +20,12 @@ export function getEditorValue() {
 }
 
 function setupMonaco() {
+  // Check if window.require is available
+  if (!window.require) {
+    console.warn('Monaco loader not available, editor will not initialize');
+    return;
+  }
+  
   window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
   window.require(['vs/editor/editor.main'], () => {
     window._ar3sEditor = monaco.editor.create(document.getElementById('editor'), {

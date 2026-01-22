@@ -1,8 +1,11 @@
 // Athena AI Assistant Module
-import { getEditorValue } from './ide.js';
-
 let currentMode = 'generate';
 let generatedCode = '';
+
+// Helper function to get editor value - handles case where editor isn't loaded
+function getEditorValue() {
+  return window._ar3sEditor?.getValue() || '';
+}
 
 // Initialize AI modal functionality
 function initAthenaAI() {

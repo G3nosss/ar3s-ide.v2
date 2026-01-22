@@ -614,3 +614,28 @@ body::before {
 .terminal-warning {
   color: #ffaa00;
 }
+
+/* AI Card specific styling */
+.ai-card {
+  cursor: default;
+  pointer-events: none;
+}
+
+.ai-card ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.ai-card ul li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.ai-card ul li::before {
+  content: '▹';
+  position: absolute;
+  left: 0;
+  color: var(--neon-cyan);
+  font-weight: bold;
+}

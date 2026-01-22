@@ -165,6 +165,15 @@ function showPinoutDiagram() {
   renderReactFlowDiagram(pinoutCanvas, currentWiringDiagram);
 }
 
+function sanitizeText(text) {
+  // Basic sanitization for text content
+  if (typeof text !== 'string') {
+    return String(text);
+  }
+  // Remove any potentially harmful characters while preserving readability
+  return text.replace(/[<>]/g, '').substring(0, 100);
+}
+
 function renderTextDiagram(container, wiringDiagram) {
   const diagramText = document.createElement('pre');
   diagramText.style.color = 'var(--accent)';
@@ -178,14 +187,14 @@ function renderTextDiagram(container, wiringDiagram) {
   if (wiringDiagram.edges && wiringDiagram.nodes) {
     const nodeMap = {};
     wiringDiagram.nodes.forEach(node => {
-      nodeMap[node.id] = node.data.label;
+      nodeMap[node.id] = sanitizeText(node.data?.label || node.id);
     });
     
     wiringDiagram.edges.forEach(edge => {
-      const source = nodeMap[edge.source] || edge.source;
-      const target = nodeMap[edge.target] || edge.target;
-      const label = edge.label || '';
-      const intermediate = edge.data?.intermediate_component;
+      const source = nodeMap[edge.source] || sanitizeText(edge.source);
+      const target = nodeMap[edge.target] || sanitizeText(edge.target);
+      const label = sanitizeText(edge.label || '');
+      const intermediate = edge.data?.intermediate_component ? sanitizeText(edge.data.intermediate_component) : null;
       
       if (intermediate) {
         text += `${source} ──[${label}]──> [${intermediate}] ──> ${target}\n`;
@@ -199,7 +208,20 @@ function renderTextDiagram(container, wiringDiagram) {
   container.appendChild(diagramText);
 }
 
+// Store React root to prevent memory leaks
+let reactFlowRoot = null;
+
 function renderReactFlowDiagram(container, wiringDiagram) {
+  // Unmount previous React root if it exists
+  if (reactFlowRoot) {
+    try {
+      reactFlowRoot.unmount();
+      reactFlowRoot = null;
+    } catch (e) {
+      console.warn('Failed to unmount previous React root:', e);
+    }
+  }
+  
   // Create a root div for React
   const rootDiv = document.createElement('div');
   rootDiv.id = 'react-flow-root';
@@ -225,8 +247,8 @@ function renderReactFlowDiagram(container, wiringDiagram) {
       ]
     });
     
-    const root = ReactDOM.createRoot(rootDiv);
-    root.render(flowElement);
+    reactFlowRoot = ReactDOM.createRoot(rootDiv);
+    reactFlowRoot.render(flowElement);
   } catch (error) {
     console.error('Error rendering React Flow diagram:', error);
     // Fallback to text diagram

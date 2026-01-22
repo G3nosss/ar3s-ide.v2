@@ -148,7 +148,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   
   Serial.println("System initialized");
-  Serial.println("Prompt: ${actualPrompt}");
+  Serial.println("Prompt: ${actualPrompt.replace(/"/g, '\\"')}");
 }
 
 void loop() {

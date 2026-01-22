@@ -2,22 +2,26 @@
 import { getEditorValue } from './ide.js';
 
 let currentGeneratedCode = '';
+let currentWiringDiagram = null;
 
 // Initialize AI functionality
 function initAthenaAI() {
-  const aiBtn = document.getElementById('aiBtn');
+  const aiFab = document.getElementById('aiFab');
   const aiModal = document.getElementById('aiModal');
   const closeBtn = document.getElementById('closeAiModal');
   const generateBtn = document.getElementById('generateBtn');
   const putInIdeBtn = document.getElementById('putInIdeBtn');
   const generatePinoutBtn = document.getElementById('generatePinoutBtn');
+  const closePinoutBtn = document.getElementById('closePinoutBtn');
   const aiPrompt = document.getElementById('aiPrompt');
 
-  // Open AI modal
-  aiBtn.addEventListener('click', () => {
-    aiModal.style.display = 'flex';
-    aiPrompt.focus();
-  });
+  // Open AI modal from FAB
+  if (aiFab) {
+    aiFab.addEventListener('click', () => {
+      aiModal.style.display = 'flex';
+      aiPrompt.focus();
+    });
+  }
 
   // Close AI modal
   closeBtn.addEventListener('click', closeModal);
@@ -51,7 +55,12 @@ function initAthenaAI() {
   putInIdeBtn.addEventListener('click', putCodeInIDE);
 
   // Generate pinout diagram
-  generatePinoutBtn.addEventListener('click', generatePinout);
+  generatePinoutBtn.addEventListener('click', showPinoutDiagram);
+  
+  // Close pinout diagram
+  if (closePinoutBtn) {
+    closePinoutBtn.addEventListener('click', closePinoutDiagram);
+  }
 }
 
 function closeModal() {
@@ -62,6 +71,7 @@ function closeModal() {
   document.getElementById('aiResult').style.display = 'none';
   document.getElementById('aiError').style.display = 'none';
   document.getElementById('aiLoading').style.display = 'none';
+  document.getElementById('pinoutVisualization').style.display = 'none';
 }
 
 async function generateCode() {
@@ -84,6 +94,9 @@ async function generateCode() {
   // Get existing code if in debug mode
   const existingCode = mode === 'debug' ? getEditorValue() : '';
 
+  // Hide previous results
+  document.getElementById('pinoutVisualization').style.display = 'none';
+
   // Show loading state
   aiLoading.style.display = 'flex';
   aiError.style.display = 'none';
@@ -97,7 +110,7 @@ async function generateCode() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt,
+        userPrompt: prompt,
         mode,
         existingCode
       })
@@ -109,9 +122,10 @@ async function generateCode() {
 
     const data = await response.json();
 
-    if (data.success && data.code) {
-      currentGeneratedCode = data.code;
-      generatedCodeEl.textContent = data.code;
+    if (data.success && data.firmware_code) {
+      currentGeneratedCode = data.firmware_code;
+      currentWiringDiagram = data.wiring_diagram;
+      generatedCodeEl.textContent = data.firmware_code;
       aiResult.style.display = 'block';
     } else {
       throw new Error('No code generated');
@@ -125,12 +139,165 @@ async function generateCode() {
   }
 }
 
+function showPinoutDiagram() {
+  if (!currentWiringDiagram) {
+    showError('No wiring diagram available. Generate code first.');
+    return;
+  }
+
+  const pinoutVisualization = document.getElementById('pinoutVisualization');
+  const pinoutCanvas = document.getElementById('pinoutCanvas');
+  
+  // Show the visualization container
+  pinoutVisualization.style.display = 'block';
+  
+  // Clear previous content
+  pinoutCanvas.innerHTML = '';
+  
+  // Check if React Flow is available
+  if (typeof ReactFlow === 'undefined') {
+    // Fallback: render simple text-based diagram
+    renderTextDiagram(pinoutCanvas, currentWiringDiagram);
+    return;
+  }
+  
+  // Render React Flow diagram
+  renderReactFlowDiagram(pinoutCanvas, currentWiringDiagram);
+}
+
+function renderTextDiagram(container, wiringDiagram) {
+  const diagramText = document.createElement('pre');
+  diagramText.style.color = 'var(--accent)';
+  diagramText.style.padding = '1rem';
+  diagramText.style.fontFamily = "'Courier New', monospace";
+  
+  let text = '╔════════════════════════════════╗\n';
+  text += '║      WIRING CONNECTIONS        ║\n';
+  text += '╚════════════════════════════════╝\n\n';
+  
+  if (wiringDiagram.edges && wiringDiagram.nodes) {
+    const nodeMap = {};
+    wiringDiagram.nodes.forEach(node => {
+      nodeMap[node.id] = node.data.label;
+    });
+    
+    wiringDiagram.edges.forEach(edge => {
+      const source = nodeMap[edge.source] || edge.source;
+      const target = nodeMap[edge.target] || edge.target;
+      const label = edge.label || '';
+      const intermediate = edge.data?.intermediate_component;
+      
+      if (intermediate) {
+        text += `${source} ──[${label}]──> [${intermediate}] ──> ${target}\n`;
+      } else {
+        text += `${source} ──[${label}]──> ${target}\n`;
+      }
+    });
+  }
+  
+  diagramText.textContent = text;
+  container.appendChild(diagramText);
+}
+
+function renderReactFlowDiagram(container, wiringDiagram) {
+  // Create a root div for React
+  const rootDiv = document.createElement('div');
+  rootDiv.id = 'react-flow-root';
+  rootDiv.style.width = '100%';
+  rootDiv.style.height = '100%';
+  container.appendChild(rootDiv);
+  
+  try {
+    // Process edges to include intermediate components as nodes
+    const processedData = processWiringDiagram(wiringDiagram);
+    
+    // Use React Flow
+    const { ReactFlow, Controls, Background } = window.ReactFlow;
+    
+    const flowElement = React.createElement(ReactFlow, {
+      nodes: processedData.nodes,
+      edges: processedData.edges,
+      fitView: true,
+      style: { background: 'var(--panel)' },
+      children: [
+        React.createElement(Controls),
+        React.createElement(Background, { color: 'var(--accent)', gap: 16 })
+      ]
+    });
+    
+    const root = ReactDOM.createRoot(rootDiv);
+    root.render(flowElement);
+  } catch (error) {
+    console.error('Error rendering React Flow diagram:', error);
+    // Fallback to text diagram
+    container.innerHTML = '';
+    renderTextDiagram(container, wiringDiagram);
+  }
+}
+
+function processWiringDiagram(wiringDiagram) {
+  const nodes = [...wiringDiagram.nodes];
+  const edges = [];
+  
+  let intermediateNodeCounter = 0;
+  
+  wiringDiagram.edges.forEach(edge => {
+    if (edge.data?.intermediate_component) {
+      // Create an intermediate node
+      const intermediateId = `intermediate_${intermediateNodeCounter++}`;
+      const sourceNode = nodes.find(n => n.id === edge.source);
+      const targetNode = nodes.find(n => n.id === edge.target);
+      
+      if (sourceNode && targetNode) {
+        // Calculate position between source and target
+        const intermediateNode = {
+          id: intermediateId,
+          type: 'default',
+          position: {
+            x: (sourceNode.position.x + targetNode.position.x) / 2,
+            y: (sourceNode.position.y + targetNode.position.y) / 2
+          },
+          data: { label: edge.data.intermediate_component }
+        };
+        
+        nodes.push(intermediateNode);
+        
+        // Split the edge into two edges
+        edges.push({
+          id: `${edge.id}_1`,
+          source: edge.source,
+          target: intermediateId,
+          label: edge.label
+        });
+        
+        edges.push({
+          id: `${edge.id}_2`,
+          source: intermediateId,
+          target: edge.target
+        });
+      }
+    } else {
+      edges.push(edge);
+    }
+  });
+  
+  return { nodes, edges };
+}
+
+function closePinoutDiagram() {
+  const pinoutVisualization = document.getElementById('pinoutVisualization');
+  pinoutVisualization.style.display = 'none';
+}
+
 async function generatePinout() {
   const aiLoading = document.getElementById('aiLoading');
   const aiError = document.getElementById('aiError');
   const aiResult = document.getElementById('aiResult');
   const generatedCodeEl = document.getElementById('generatedCode');
   const generatePinoutBtn = document.getElementById('generatePinoutBtn');
+
+  // Hide previous pinout
+  document.getElementById('pinoutVisualization').style.display = 'none';
 
   // Show loading state
   aiLoading.style.display = 'flex';
@@ -144,7 +311,7 @@ async function generatePinout() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt: 'Generate Arduino pinout diagram',
+        userPrompt: 'Generate Arduino pinout diagram',
         mode: 'pinout',
         existingCode: getEditorValue()
       })
@@ -156,10 +323,16 @@ async function generatePinout() {
 
     const data = await response.json();
 
-    if (data.success && data.code) {
-      currentGeneratedCode = data.code;
-      generatedCodeEl.textContent = data.code;
+    if (data.success && data.firmware_code) {
+      currentGeneratedCode = data.firmware_code;
+      currentWiringDiagram = data.wiring_diagram;
+      generatedCodeEl.textContent = data.firmware_code;
       aiResult.style.display = 'block';
+      
+      // Show the pinout diagram
+      if (currentWiringDiagram) {
+        showPinoutDiagram();
+      }
     } else {
       throw new Error('No pinout generated');
     }

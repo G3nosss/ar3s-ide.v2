@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="/assets/styles.css">
   <!-- Monaco via CDN to keep server size minimal -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js" crossorigin="anonymous"></script>
+  <!-- React Flow via CDN for pinout diagrams -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reactflow@11/dist/style.css">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reactflow@11/dist/umd/index.js"></script>
 </head>
 <body>
   <header class="header">
@@ -36,7 +41,6 @@
         <button id="buildAvrBtn">Build (AVR)</button>
         <button id="uploadArduinoBtn">Upload to Arduino</button>
         <button id="clearBtn">Clear</button>
-        <button id="aiBtn" class="ai-btn">⚡ Athena AI</button>
       </div>
 
       <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
@@ -45,11 +49,21 @@
     </div>
   </main>
 
+  <!-- Floating Action Button -->
+  <button id="aiFab" class="ai-fab" aria-label="Open Athena AI Assistant">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20z"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <circle cx="12" cy="17" r="0.5"/>
+      <path d="M12 8v4"/>
+    </svg>
+  </button>
+
   <!-- AI Modal -->
   <div id="aiModal" class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title" style="display:none;">
     <div class="ai-modal-content">
       <div class="ai-modal-header">
-        <h2 id="ai-modal-title">⚡ Athena AI Assistant</h2>
+        <h2 id="ai-modal-title">⚡ NEURAL LINK</h2>
         <button id="closeAiModal" class="close-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="ai-modal-body">
@@ -70,7 +84,7 @@
         </div>
         <div id="aiLoading" class="ai-loading" style="display:none;">
           <div class="loading-spinner"></div>
-          <p>Athena is thinking...</p>
+          <p class="glitch-text" data-text="Processing...">Processing...</p>
         </div>
         <div id="aiError" class="ai-error" style="display:none;"></div>
         <div id="aiResult" class="ai-result" style="display:none;">
@@ -80,6 +94,13 @@
             <button id="putInIdeBtn" class="put-in-ide-btn">Put in IDE</button>
             <button id="generatePinoutBtn" class="generate-pinout-btn">Generate Pinout Diagram</button>
           </div>
+          
+          <!-- Pinout Diagram Visualization -->
+          <div id="pinoutVisualization" class="pinout-visualization" style="display:none;">
+            <h3>Wiring Diagram</h3>
+            <div id="pinoutCanvas" class="pinout-canvas"></div>
+            <button id="closePinoutBtn" class="close-pinout-btn">Close Diagram</button>
+          </div>
         </div>
       </div>
     </div>
@@ -88,7 +109,7 @@
   <!-- Success Notification -->
   <div id="successNotification" class="success-notification" style="display:none;">
     <span class="success-icon">✓</span>
-    <span class="success-message">Code injected into IDE successfully!</span>
+    <span class="success-message">Firmware Synthesis Complete</span>
   </div>
 
   <script type="module" src="/assets/ide.js"></script>

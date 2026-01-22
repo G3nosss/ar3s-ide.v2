@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="/assets/styles.css">
   <!-- Monaco via CDN to keep server size minimal -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js" crossorigin="anonymous"></script>
+  <!-- React Flow for wiring diagrams -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reactflow@11.10.1/dist/umd/index.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reactflow@11.10.1/dist/style.min.css" />
 </head>
 <body>
   <header class="header">
@@ -36,7 +41,6 @@
         <button id="buildAvrBtn">Build (AVR)</button>
         <button id="uploadArduinoBtn">Upload to Arduino</button>
         <button id="clearBtn">Clear</button>
-        <button id="aiBtn" class="ai-btn">⚡ Athena AI</button>
       </div>
 
       <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
@@ -45,11 +49,24 @@
     </div>
   </main>
 
+  <!-- Floating Action Button for AI -->
+  <button id="aiFab" class="ai-fab" aria-label="Open Athena AI Assistant">
+    <svg class="ai-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="ai-pulse-ring"></span>
+  </button>
+
   <!-- AI Modal -->
   <div id="aiModal" class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title" style="display:none;">
     <div class="ai-modal-content">
       <div class="ai-modal-header">
-        <h2 id="ai-modal-title">⚡ Athena AI Assistant</h2>
+        <h2 id="ai-modal-title">
+          <span class="neural-link-icon">⚡</span>
+          NEURAL LINK :: ATHENA AI
+        </h2>
         <button id="closeAiModal" class="close-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="ai-modal-body">
@@ -64,21 +81,46 @@
           </label>
         </div>
         <div class="ai-input-section">
-          <label for="aiPrompt">What would you like to do?</label>
+          <label for="aiPrompt">SYSTEM PROMPT:</label>
           <textarea id="aiPrompt" class="ai-prompt" placeholder="e.g., Create a blink program with 2 LEDs on pins 12 and 13"></textarea>
-          <button id="generateBtn" class="generate-btn">Generate with AI</button>
+          <button id="generateBtn" class="generate-btn">
+            <span class="btn-icon">⚡</span>
+            INITIATE SYNTHESIS
+          </button>
         </div>
         <div id="aiLoading" class="ai-loading" style="display:none;">
-          <div class="loading-spinner"></div>
-          <p>Athena is thinking...</p>
+          <div class="loading-animation">
+            <div class="glitch-text" data-text="PROCESSING">PROCESSING</div>
+            <div class="loading-bar">
+              <div class="loading-progress"></div>
+            </div>
+            <p class="loading-status">Athena AI analyzing request...</p>
+          </div>
         </div>
         <div id="aiError" class="ai-error" style="display:none;"></div>
         <div id="aiResult" class="ai-result" style="display:none;">
-          <h3>Generated Code:</h3>
-          <pre id="generatedCode" class="generated-code"></pre>
+          <div class="result-header">
+            <h3>
+              <span class="success-icon">✓</span>
+              FIRMWARE SYNTHESIS COMPLETE
+            </h3>
+          </div>
+          <div class="code-preview-container">
+            <pre id="generatedCode" class="generated-code"></pre>
+          </div>
           <div class="ai-actions">
-            <button id="putInIdeBtn" class="put-in-ide-btn">Put in IDE</button>
-            <button id="generatePinoutBtn" class="generate-pinout-btn">Generate Pinout Diagram</button>
+            <button id="putInIdeBtn" class="put-in-ide-btn">
+              <span class="btn-icon">⬇</span>
+              PUT IN IDE
+            </button>
+            <button id="generatePinoutBtn" class="generate-pinout-btn">
+              <span class="btn-icon">📊</span>
+              GENERATE PINOUT DIAGRAM
+            </button>
+          </div>
+          <div id="wiringDiagramContainer" class="wiring-diagram-container" style="display:none;">
+            <h4>WIRING DIAGRAM:</h4>
+            <div id="wiringDiagram" class="wiring-diagram-canvas"></div>
           </div>
         </div>
       </div>
@@ -87,8 +129,14 @@
 
   <!-- Success Notification -->
   <div id="successNotification" class="success-notification" style="display:none;">
-    <span class="success-icon">✓</span>
-    <span class="success-message">Code injected into IDE successfully!</span>
+    <span class="notification-icon">✓</span>
+    <span class="notification-message">FIRMWARE SYNTHESIS COMPLETE</span>
+  </div>
+
+  <!-- Injection Success Notification -->
+  <div id="injectionNotification" class="success-notification injection-notification" style="display:none;">
+    <span class="notification-icon">⬇</span>
+    <span class="notification-message">Code injected into IDE successfully!</span>
   </div>
 
   <script type="module" src="/assets/ide.js"></script>

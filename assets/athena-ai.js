@@ -14,6 +14,12 @@ function initAthenaAI() {
   const generatePinoutBtn = document.getElementById('generatePinoutBtn');
   const aiPrompt = document.getElementById('aiPrompt');
 
+  // Check if all elements exist
+  if (!aiFab || !aiModal || !closeBtn || !generateBtn || !putInIdeBtn || !generatePinoutBtn || !aiPrompt) {
+    console.error('Athena AI: Required DOM elements not found');
+    return;
+  }
+
   // Open AI modal via FAB
   aiFab.addEventListener('click', () => {
     aiModal.style.display = 'flex';

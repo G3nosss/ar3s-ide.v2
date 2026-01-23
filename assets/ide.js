@@ -19,35 +19,80 @@ export function getEditorValue() {
   return window._ar3sEditor?.getValue() || '';
 }
 
+// Shared button handlers to avoid duplication
+function setupButtonHandlers() {
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const code = window._ar3sEditor.getValue();
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sketch.ino';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    window._ar3sEditor.setValue('');
+  });
+}
+
 function setupMonaco() {
   // Check if window.require is available
-  if (!window.require) {
-    console.warn('Monaco loader not available, editor will not initialize');
+  if (typeof window.require === 'undefined') {
+    console.warn('Monaco Editor loader not available. Using fallback editor.');
+    
+    // Create a fallback editor object with proper state management
+    let currentValue = initialSketch;
+    window._ar3sEditor = {
+      getValue: () => currentValue,
+      setValue: (value) => {
+        currentValue = value;
+        console.log('Fallback editor setValue called');
+      }
+    };
+    
+    setupButtonHandlers();
     return;
   }
   
-  window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
-  window.require(['vs/editor/editor.main'], () => {
-    window._ar3sEditor = monaco.editor.create(document.getElementById('editor'), {
-      value: initialSketch,
-      language: 'cpp',
-      theme: 'vs-dark',
-      automaticLayout: true,
-      minimap: { enabled: false }
-    });
+  try {
+    window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+    window.require(['vs/editor/editor.main'], () => {
+      window._ar3sEditor = monaco.editor.create(document.getElementById('editor'), {
+        value: initialSketch,
+        language: 'cpp',
+        theme: 'vs-dark',
+        automaticLayout: true,
+        minimap: { enabled: false }
+      });
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const code = window._ar3sEditor.getValue();
-      const blob = new Blob([code], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'sketch.ino';
-      a.click();
-      URL.revokeObjectURL(url);
+      setupButtonHandlers();
+    }, (err) => {
+      console.error('Failed to load Monaco Editor:', err);
+      // Fallback if Monaco fails to load
+      let currentValue = initialSketch;
+      window._ar3sEditor = {
+        getValue: () => currentValue,
+        setValue: (value) => {
+          currentValue = value;
+          console.log('Fallback editor setValue called');
+        }
+      };
+      setupButtonHandlers();
     });
-
-    document.getElementById('clearBtn').addEventListener('click', () => window._ar3sEditor.setValue(''));
-  });
+  } catch (error) {
+    console.error('Error initializing Monaco Editor:', error);
+    // Fallback on exception
+    let currentValue = initialSketch;
+    window._ar3sEditor = {
+      getValue: () => currentValue,
+      setValue: (value) => {
+        currentValue = value;
+        console.log('Fallback editor setValue called');
+      }
+    };
+    setupButtonHandlers();
+  }
 }
 setupMonaco();

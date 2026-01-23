@@ -1,228 +1,218 @@
-// Athena AI Assistant Module
-let currentMode = 'generate';
-let generatedCode = '';
+// Athena AI Integration for AR3S IDE
+import { getEditorValue } from './ide.js';
 
-// Helper function to get editor value - handles case where editor isn't loaded
-function getEditorValue() {
-  return window._ar3sEditor?.getValue() || '';
-}
+let currentGeneratedCode = '';
 
-// Initialize AI modal functionality
+// Initialize AI functionality
 function initAthenaAI() {
-  const modal = document.getElementById('aiModal');
-  const aiAssistBtn = document.getElementById('aiAssistBtn');
+  const aiBtn = document.getElementById('aiBtn');
+  const aiModal = document.getElementById('aiModal');
   const closeBtn = document.getElementById('closeAiModal');
   const generateBtn = document.getElementById('generateBtn');
   const putInIdeBtn = document.getElementById('putInIdeBtn');
   const generatePinoutBtn = document.getElementById('generatePinoutBtn');
-  const modeBtns = document.querySelectorAll('.ai-mode-btn');
   const aiPrompt = document.getElementById('aiPrompt');
-  const aiOutput = document.getElementById('aiOutput');
-  const aiCode = document.getElementById('aiCode');
-  const aiError = document.getElementById('aiError');
-  const successNotification = document.getElementById('successNotification');
 
-  // Open modal
-  aiAssistBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  // Open AI modal
+  aiBtn.addEventListener('click', () => {
+    aiModal.style.display = 'flex';
     aiPrompt.focus();
   });
 
-  // Close modal
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-    document.body.style.overflow = ''; // Restore scrolling
-    resetModal();
-  });
-
-  // Close on outside click
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-      resetModal();
+  // Close AI modal
+  closeBtn.addEventListener('click', closeModal);
+  
+  // Close modal when clicking outside
+  aiModal.addEventListener('click', (e) => {
+    if (e.target === aiModal) {
+      closeModal();
     }
   });
 
-  // Close on Escape key
+  // Close modal with Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display === 'flex') {
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-      resetModal();
+    if (e.key === 'Escape' && aiModal.style.display === 'flex') {
+      closeModal();
     }
   });
 
-  // Mode selection
-  modeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      modeBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentMode = btn.dataset.mode;
-      
-      // Update placeholder based on mode
-      if (currentMode === 'generate') {
-        aiPrompt.placeholder = 'e.g., Create a blink LED program with adjustable delay';
-        generateBtn.querySelector('.btn-text').textContent = 'Generate with AI';
-      } else if (currentMode === 'debug') {
-        aiPrompt.placeholder = 'e.g., Why is my serial communication not working?';
-        generateBtn.querySelector('.btn-text').textContent = 'Debug with AI';
-      }
-    });
-  });
-
-  // Generate code
-  generateBtn.addEventListener('click', async () => {
-    const prompt = aiPrompt.value.trim();
-    
-    if (!prompt) {
-      showError('Please enter a prompt');
-      return;
-    }
-
-    // Show loading state
-    setLoading(true);
-    aiOutput.style.display = 'none';
-    aiError.style.display = 'none';
-
-    try {
-      const payload = {
-        prompt,
-        mode: currentMode
-      };
-
-      // Include current editor code for debug mode
-      if (currentMode === 'debug') {
-        payload.code = getEditorValue();
-      }
-
-      const response = await fetch('/api/copilot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to generate code');
-      }
-
-      const data = await response.json();
-      generatedCode = data.code;
-
-      // Display generated code
-      aiCode.textContent = generatedCode;
-      aiOutput.style.display = 'block';
-      
-    } catch (error) {
-      // Handle network errors separately from API errors
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        showError('Network error: Unable to reach the AI service. Please check your connection.');
-      } else {
-        showError(error.message || 'An unexpected error occurred');
-      }
-    } finally {
-      setLoading(false);
+  // Generate code with AI
+  generateBtn.addEventListener('click', generateCode);
+  
+  // Allow Enter to submit (Shift+Enter for new line)
+  aiPrompt.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      generateCode();
     }
   });
 
   // Put generated code in IDE
-  putInIdeBtn.addEventListener('click', () => {
-    if (window._ar3sEditor && generatedCode) {
-      window._ar3sEditor.setValue(generatedCode);
-      modal.style.display = 'none';
-      resetModal();
-      showSuccessNotification();
-    }
-  });
+  putInIdeBtn.addEventListener('click', putCodeInIDE);
 
   // Generate pinout diagram
-  generatePinoutBtn.addEventListener('click', async () => {
-    const prompt = aiPrompt.value.trim() || 'Generate a standard Arduino Uno pinout diagram';
-    
-    // Show loading state
-    setLoading(true);
-    aiError.style.display = 'none';
+  generatePinoutBtn.addEventListener('click', generatePinout);
+}
 
-    try {
-      const response = await fetch('/api/copilot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt,
-          mode: 'pinout'
-        })
-      });
+function closeModal() {
+  const aiModal = document.getElementById('aiModal');
+  aiModal.style.display = 'none';
+  
+  // Reset UI state
+  document.getElementById('aiResult').style.display = 'none';
+  document.getElementById('aiError').style.display = 'none';
+  document.getElementById('aiLoading').style.display = 'none';
+}
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to generate pinout diagram');
-      }
+async function generateCode() {
+  const aiPrompt = document.getElementById('aiPrompt');
+  const aiLoading = document.getElementById('aiLoading');
+  const aiError = document.getElementById('aiError');
+  const aiResult = document.getElementById('aiResult');
+  const generatedCodeEl = document.getElementById('generatedCode');
+  const generateBtn = document.getElementById('generateBtn');
+  
+  const prompt = aiPrompt.value.trim();
+  if (!prompt) {
+    showError('Please enter a prompt');
+    return;
+  }
 
-      const data = await response.json();
-      generatedCode = data.code;
+  // Get selected mode
+  const mode = document.querySelector('input[name="aiMode"]:checked').value;
+  
+  // Get existing code if in debug mode
+  const existingCode = mode === 'debug' ? getEditorValue() : '';
 
-      // Display pinout code
-      aiCode.textContent = generatedCode;
-      aiOutput.style.display = 'block';
-      
-    } catch (error) {
-      showError(error.message);
-    } finally {
-      setLoading(false);
+  // Show loading state
+  aiLoading.style.display = 'flex';
+  aiError.style.display = 'none';
+  aiResult.style.display = 'none';
+  generateBtn.disabled = true;
+
+  try {
+    const response = await fetch('/api/copilot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt,
+        mode,
+        existingCode
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  });
 
-  // Helper functions
-  function setLoading(isLoading) {
-    const btnText = generateBtn.querySelector('.btn-text');
-    const btnSpinner = generateBtn.querySelector('.btn-spinner');
-    
-    if (isLoading) {
-      btnText.style.display = 'none';
-      btnSpinner.style.display = 'inline-block';
-      generateBtn.disabled = true;
-      generateBtn.style.opacity = '0.6';
+    const data = await response.json();
+
+    if (data.success && data.code) {
+      currentGeneratedCode = data.code;
+      generatedCodeEl.textContent = data.code;
+      aiResult.style.display = 'block';
     } else {
-      btnText.style.display = 'inline';
-      btnSpinner.style.display = 'none';
-      generateBtn.disabled = false;
-      generateBtn.style.opacity = '1';
+      throw new Error('No code generated');
     }
+  } catch (error) {
+    console.error('AI generation error:', error);
+    showError('Failed to generate code. Please try again.');
+  } finally {
+    aiLoading.style.display = 'none';
+    generateBtn.disabled = false;
+  }
+}
+
+async function generatePinout() {
+  const aiLoading = document.getElementById('aiLoading');
+  const aiError = document.getElementById('aiError');
+  const aiResult = document.getElementById('aiResult');
+  const generatedCodeEl = document.getElementById('generatedCode');
+  const generatePinoutBtn = document.getElementById('generatePinoutBtn');
+
+  // Show loading state
+  aiLoading.style.display = 'flex';
+  aiError.style.display = 'none';
+  generatePinoutBtn.disabled = true;
+
+  try {
+    const response = await fetch('/api/copilot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: 'Generate Arduino pinout diagram',
+        mode: 'pinout',
+        existingCode: getEditorValue()
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.code) {
+      currentGeneratedCode = data.code;
+      generatedCodeEl.textContent = data.code;
+      aiResult.style.display = 'block';
+    } else {
+      throw new Error('No pinout generated');
+    }
+  } catch (error) {
+    console.error('Pinout generation error:', error);
+    showError('Failed to generate pinout diagram. Please try again.');
+  } finally {
+    aiLoading.style.display = 'none';
+    generatePinoutBtn.disabled = false;
+  }
+}
+
+function putCodeInIDE() {
+  if (!currentGeneratedCode) {
+    showError('No code to inject');
+    return;
   }
 
-  function showError(message) {
-    aiError.textContent = message;
-    aiError.style.display = 'block';
-    aiOutput.style.display = 'none';
-  }
-
-  function resetModal() {
-    aiPrompt.value = '';
-    aiOutput.style.display = 'none';
-    aiError.style.display = 'none';
-    generatedCode = '';
-  }
-
-  function showSuccessNotification() {
-    successNotification.classList.add('show');
+  // Check if editor is available
+  if (window._ar3sEditor) {
+    window._ar3sEditor.setValue(currentGeneratedCode);
+    
+    // Show success notification
+    showSuccessNotification();
+    
+    // Close modal after a short delay
     setTimeout(() => {
-      successNotification.classList.remove('show');
-    }, 3000);
+      closeModal();
+    }, 500);
+  } else {
+    showError('Editor not ready. Please try again.');
   }
+}
 
-  // Allow Enter key to submit (with Ctrl/Cmd for newline)
-  aiPrompt.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-      e.preventDefault();
-      generateBtn.click();
-    }
-  });
+function showError(message) {
+  const aiError = document.getElementById('aiError');
+  aiError.textContent = message;
+  aiError.style.display = 'block';
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    aiError.style.display = 'none';
+  }, 5000);
+}
+
+function showSuccessNotification() {
+  const notification = document.getElementById('successNotification');
+  notification.style.display = 'flex';
+  
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 3000);
 }
 
 // Initialize when DOM is ready

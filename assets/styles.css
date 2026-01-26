@@ -97,6 +97,48 @@ button, .btn {
   transform: translateY(-2px);
 }
 
+/* Floating Action Button */
+.ai-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.6), 0 0 40px rgba(0, 217, 255, 0.3);
+  transition: all 0.3s ease;
+  animation: fabPulse 2s ease-in-out infinite;
+}
+
+@keyframes fabPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.6), 0 0 40px rgba(0, 217, 255, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.8), 0 0 60px rgba(0, 217, 255, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+.ai-fab:hover {
+  box-shadow: 0 0 40px rgba(0, 217, 255, 0.9), 0 0 80px rgba(0, 217, 255, 0.6);
+  transform: scale(1.1) rotate(5deg);
+  animation: none;
+}
+
+.ai-fab svg {
+  color: #fff;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+}
+
 /* AI Modal */
 .ai-modal {
   display: none;
@@ -293,7 +335,58 @@ button, .btn {
 
 .ai-loading p {
   margin-top: 1rem;
-  color: var(--muted);
+  color: var(--accent);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+/* Glitch effect for loading text */
+.glitch-text {
+  position: relative;
+  color: var(--accent);
+  animation: glitchText 2s infinite;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  animation: glitchBefore 0.3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  color: #ff006e;
+}
+
+.glitch-text::after {
+  animation: glitchAfter 0.3s infinite;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  color: #00d9ff;
+}
+
+@keyframes glitchText {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitchBefore {
+  0%, 100% { transform: translate(0); }
+  33% { transform: translate(-2px, 0); }
+  66% { transform: translate(2px, 0); }
+}
+
+@keyframes glitchAfter {
+  0%, 100% { transform: translate(0); }
+  33% { transform: translate(2px, 0); }
+  66% { transform: translate(-2px, 0); }
 }
 
 /* AI Error */
@@ -396,6 +489,91 @@ button, .btn {
 
 .success-message {
   font-weight: 600;
+}
+
+.success-message {
+  font-weight: 600;
+}
+
+/* Pinout Visualization */
+.pinout-visualization {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.pinout-visualization h3 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.pinout-canvas {
+  width: 100%;
+  height: 400px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.close-pinout-btn {
+  margin-top: 1rem;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent2), #9c4dff);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-pinout-btn:hover {
+  box-shadow: 0 0 15px rgba(124, 77, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* React Flow node styles */
+.react-flow__node {
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+}
+
+.react-flow__node-input {
+  border-color: var(--neon-cyan);
+}
+
+.react-flow__node-output {
+  border-color: var(--neon-purple);
+}
+
+.react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.react-flow__edge-text {
+  fill: var(--text);
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.react-flow__handle {
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  width: 10px;
+  height: 10px;
 }
 
 /* Accessibility */

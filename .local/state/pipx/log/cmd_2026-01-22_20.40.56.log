@@ -1,0 +1,8 @@
+   110.3ms (setup:858): 2026-01-22 20:40:56
+   110.4ms (setup:859): /usr/bin/pipx ensurepath
+   110.4ms (setup:860): pipx version is 1.4.3
+   110.4ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   111.4ms (ensure_pipx_paths:127): ⚠️  All pipx binary directories have been added to PATH. If you are sure you want to proceed, try again with the
+'--force' flag.
+
+   111.5ms (cli:932): pipx finished.

@@ -1,0 +1,6 @@
+node_modules/
+.env
+.ssh/
+id_rsa
+*.pem
+.DS_Store

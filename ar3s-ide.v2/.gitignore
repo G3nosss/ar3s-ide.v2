@@ -1,0 +1,7 @@
+node_modules/
+.env
+*. log
+/tmp/
+/var/
+. DS_Store
+avr_files/

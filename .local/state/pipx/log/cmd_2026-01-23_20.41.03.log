@@ -1,0 +1,15 @@
+   248.6ms (setup:858): 2026-01-23 20:41:03
+   248.7ms (setup:859): /usr/bin/pipx uninstall aider-chat
+   248.7ms (setup:860): pipx version is 1.4.3
+   248.8ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   249.0ms (run_pipx_command:186): Virtual Environment location is /home/ubuntu/.local/share/pipx/venvs/aider-chat
+   257.4ms (run_subprocess:168): running <checking pip's availability>
+   282.2ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7664fcfffe60>, origin='/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+   282.3ms (run_subprocess:193): returncode: 0
+   283.2ms (needs_upgrade:78): Time since last upgrade of shared libs, in seconds: 89954. Upgrade will be run by pipx if greater than 2592000.
+   283.3ms (run_subprocess:168): running <checking pip's availability>
+   302.3ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7eafcafffe60>, origin='/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+   302.4ms (run_subprocess:193): returncode: 0
+   305.6ms (uninstall:148): removed file /home/ubuntu/.local/bin/aider
+   305.7ms (rmdir:55): removing directory /home/ubuntu/.local/share/pipx/venvs/aider-chat
+  2056.6ms (cli:932): pipx finished.

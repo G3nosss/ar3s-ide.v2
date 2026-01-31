@@ -1,0 +1,5 @@
+   110.3ms (setup:858): 2026-01-23 20:42:09
+   110.5ms (setup:859): /usr/bin/pipx uninstall-all
+   110.5ms (setup:860): pipx version is 1.4.3
+   110.5ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   110.7ms (cli:932): pipx finished.

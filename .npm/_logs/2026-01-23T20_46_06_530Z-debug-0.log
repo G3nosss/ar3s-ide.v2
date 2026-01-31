@@ -1,0 +1,19 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@11.7.0
+2 info using node@v24.13.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/ubuntu/.npmrc
+5 silly config load:file:/usr/local/etc/npmrc
+6 verbose title npm cache clean
+7 verbose argv "cache" "clean" "--force"
+8 verbose logfile logs-max:10 dir:/home/ubuntu/.npm/_logs/2026-01-23T20_46_06_530Z-
+9 verbose logfile /home/ubuntu/.npm/_logs/2026-01-23T20_46_06_530Z-debug-0.log
+10 warn using --force Recommended protections disabled.
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 verbose cwd /home/ubuntu
+14 verbose os Linux 6.14.0-1018-aws
+15 verbose node v24.13.0
+16 verbose npm  v11.7.0
+17 verbose exit 0
+18 info ok

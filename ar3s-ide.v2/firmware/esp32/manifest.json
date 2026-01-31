@@ -1,0 +1,11 @@
+{
+  "name": "Ar3s Sample Firmware",
+  "version": "0.1.0",
+  "build": "2026-01-18",
+  "chipFamily": "ESP32",
+  "parts": [
+    { "path": "/firmware/esp32/bootloader.bin", "offset": 4096 },
+    { "path": "/firmware/esp32/partitions.bin", "offset": 32768 },
+    { "path": "/firmware/esp32/app.bin", "offset": 65536 }
+  ]
+}

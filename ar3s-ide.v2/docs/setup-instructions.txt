@@ -1,0 +1,474 @@
+# Ar3s AVR Build API Documentation
+
+## Overview
+The Ar3s AVR Build API is a web-based service that facilitates building AVR firmware by leveraging `arduino-cli` within a Docker container. This service compiles user-provided Arduino code and generates a `.hex` file ready to upload to an AVR microcontroller.
+
+---
+
+## Directory Structure
+### Key Directories and Files:
+- `/opt/ar3s-server/server/` - Core server code, where the `index.js` file resides.
+- `/var/www/ar3s/firmware/avr/` - Stores generated `.hex` firmware files after successful compilation.
+  - Example: `sketch.ino.with_bootloader.hex`
+- `/tmp/test-sketch/` - Temporary directory for Arduino sketches submitted via API.
+- `/opt/ar3s-server/docs/setup-instructions.txt` - This documentation file.
+
+---
+
+## API Endpoints
+### `POST /api/build/avr`
+The main endpoint for compiling Arduino sketches into `.hex` files.
+
+#### **Request:**
+- **URL:** `http://<SERVER_IP>:8081/api/build/avr`
+- **Method:** `POST`
+- **Content-Type:** `application/json`
+- **Body:**
+  ```json
+  {
+      "code": "Arduino sketch code as a string",
+      "fqbn": "Fully Qualified Board Name, e.g., arduino:avr:uno"
+  }
+  ```
+
+#### **Example cURL Command:**
+```bash
+curl -i -X POST http://127.0.0.1:8081/api/build/avr \
+-H 'Content-Type: application/json' \
+-d '{"code":"void setup(){Serial.begin(115200);} void loop(){Serial.println(\"Hello World\");delay(1000);}", "fqbn":"arduino:avr:uno"}'
+```
+
+#### **Response:**
+- **200 OK**: Successful build
+  ```json
+  {
+      "artifactUrl": "/firmware/avr/sketch.ino.with_bootloader.hex",
+      "log": "Build output and compilation logs"
+  }
+  ```
+- **400 Bad Request**: Missing or invalid parameters
+  ```json
+  {
+      "error": "Missing 'code' or 'fqbn' in request body"
+  }
+  ```
+- **500 Internal Server Error**: Build or compilation failure
+  ```json
+  {
+      "error": "Compilation failed",
+      "log": "Detailed error messages from arduino-cli"
+  }
+  ```
+
+---
+
+## Service Configuration
+### Systemd Service Setup
+The API runs as a systemd service for automatic startup and management.
+
+#### **Service File Location:**
+`/etc/systemd/system/ar3s-build-api.service`
+
+#### **Example Service Configuration:**
+```ini
+[Unit]
+Description=Ar3s AVR Build API Service
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=ar3s
+WorkingDirectory=/opt/ar3s-server/server
+ExecStart=/usr/bin/node /opt/ar3s-server/server/index.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+#### **Service Management Commands:**
+```bash
+# Start the service
+sudo systemctl start ar3s-build-api
+
+# Stop the service
+sudo systemctl stop ar3s-build-api
+
+# Restart the service
+sudo systemctl restart ar3s-build-api
+
+# Enable service to start on boot
+sudo systemctl enable ar3s-build-api
+
+# Check service status
+sudo systemctl status ar3s-build-api
+
+# View service logs
+sudo journalctl -u ar3s-build-api -f
+```
+
+---
+
+## Clean-up Strategy
+### Temporary File Management
+Build artifacts and temporary files accumulate over time and should be cleaned periodically.
+
+#### **Manual Cleanup:**
+```bash
+# Remove old sketch directories (older than 7 days)
+find /tmp/test-sketch* -type d -mtime +7 -exec rm -rf {} +
+
+# Remove old firmware files (older than 30 days)
+find /var/www/ar3s/firmware/avr/ -type f -name "*.hex" -mtime +30 -delete
+```
+
+#### **Automated Cleanup with Cron:**
+Add to crontab (`sudo crontab -e`):
+```bash
+# Clean temporary sketches daily at 2 AM
+0 2 * * * find /tmp/test-sketch* -type d -mtime +7 -exec rm -rf {} + 2>/dev/null
+
+# Clean old firmware files weekly on Sunday at 3 AM
+0 3 * * 0 find /var/www/ar3s/firmware/avr/ -type f -name "*.hex" -mtime +30 -delete 2>/dev/null
+```
+
+---
+
+## Log Management
+### Service Logs
+Logs are managed by systemd's journal and can be accessed using `journalctl`.
+
+#### **Viewing Logs:**
+```bash
+# View all logs for the service
+sudo journalctl -u ar3s-build-api
+
+# Follow logs in real-time
+sudo journalctl -u ar3s-build-api -f
+
+# View logs from the last hour
+sudo journalctl -u ar3s-build-api --since "1 hour ago"
+
+# View logs from today
+sudo journalctl -u ar3s-build-api --since today
+
+# View logs with specific priority (error and above)
+sudo journalctl -u ar3s-build-api -p err
+```
+
+#### **Log Rotation:**
+Systemd journal automatically rotates logs, but you can configure limits in `/etc/systemd/journald.conf`:
+```ini
+[Journal]
+SystemMaxUse=500M
+SystemMaxFileSize=100M
+RuntimeMaxUse=100M
+```
+
+After modifying, restart journald:
+```bash
+sudo systemctl restart systemd-journald
+```
+
+---
+
+## Backup and Restore Procedures
+### Backup Important Files
+Regular backups ensure quick recovery in case of failure.
+
+#### **Files to Backup:**
+- Server code: `/opt/ar3s-server/`
+- Firmware files: `/var/www/ar3s/firmware/avr/`
+- Service configuration: `/etc/systemd/system/ar3s-build-api.service`
+- Nginx/Caddy configuration (if applicable)
+
+#### **Backup Script Example:**
+```bash
+#!/bin/bash
+BACKUP_DIR="/backup/ar3s-$(date +%Y%m%d)"
+mkdir -p "$BACKUP_DIR"
+
+# Backup server code
+tar -czf "$BACKUP_DIR/server.tar.gz" /opt/ar3s-server/
+
+# Backup firmware files
+tar -czf "$BACKUP_DIR/firmware.tar.gz" /var/www/ar3s/firmware/
+
+# Backup service configuration
+cp /etc/systemd/system/ar3s-build-api.service "$BACKUP_DIR/"
+
+echo "Backup completed: $BACKUP_DIR"
+```
+
+#### **Restore Procedure:**
+```bash
+# Stop the service
+sudo systemctl stop ar3s-build-api
+
+# Restore server code
+sudo tar -xzf /backup/ar3s-YYYYMMDD/server.tar.gz -C /
+
+# Restore firmware files
+sudo tar -xzf /backup/ar3s-YYYYMMDD/firmware.tar.gz -C /
+
+# Restore service configuration
+sudo cp /backup/ar3s-YYYYMMDD/ar3s-build-api.service /etc/systemd/system/
+
+# Reload systemd and restart service
+sudo systemctl daemon-reload
+sudo systemctl start ar3s-build-api
+```
+
+---
+
+## Testing Instructions
+### Basic API Testing
+Verify the API is functioning correctly with test requests.
+
+#### **Test 1: Simple Blink Sketch**
+```bash
+curl -i -X POST http://127.0.0.1:8081/api/build/avr \
+-H 'Content-Type: application/json' \
+-d '{
+  "code": "void setup() { pinMode(LED_BUILTIN, OUTPUT); } void loop() { digitalWrite(LED_BUILTIN, HIGH); delay(1000); digitalWrite(LED_BUILTIN, LOW); delay(1000); }",
+  "fqbn": "arduino:avr:uno"
+}'
+```
+
+#### **Test 2: Serial Communication**
+```bash
+curl -i -X POST http://127.0.0.1:8081/api/build/avr \
+-H 'Content-Type: application/json' \
+-d '{
+  "code": "void setup() { Serial.begin(115200); } void loop() { Serial.println(\"Hello World\"); delay(1000); }",
+  "fqbn": "arduino:avr:uno"
+}'
+```
+
+#### **Test 3: Different Board (Arduino Mega)**
+```bash
+curl -i -X POST http://127.0.0.1:8081/api/build/avr \
+-H 'Content-Type: application/json' \
+-d '{
+  "code": "void setup() { pinMode(13, OUTPUT); } void loop() { digitalWrite(13, HIGH); delay(500); digitalWrite(13, LOW); delay(500); }",
+  "fqbn": "arduino:avr:mega"
+}'
+```
+
+#### **Expected Success Response:**
+- HTTP Status: 200 OK
+- Response contains `artifactUrl` field
+- Firmware file exists at the specified path
+- Log field contains compilation output
+
+---
+
+## Troubleshooting
+### Common Issues and Solutions
+
+#### **Issue 1: Service Fails to Start**
+**Symptoms:**
+- `systemctl status ar3s-build-api` shows "failed" or "inactive (dead)"
+
+**Solutions:**
+1. Check logs for errors:
+   ```bash
+   sudo journalctl -u ar3s-build-api -n 50
+   ```
+2. Verify Node.js is installed:
+   ```bash
+   node --version
+   ```
+3. Check if port 8081 is already in use:
+   ```bash
+   sudo lsof -i :8081
+   ```
+4. Ensure working directory exists:
+   ```bash
+   ls -la /opt/ar3s-server/server/
+   ```
+
+#### **Issue 2: Docker Container Not Available**
+**Symptoms:**
+- Build requests fail with Docker-related errors
+
+**Solutions:**
+1. Check if Docker is running:
+   ```bash
+   sudo systemctl status docker
+   ```
+2. Start Docker if stopped:
+   ```bash
+   sudo systemctl start docker
+   ```
+3. Verify Docker container exists:
+   ```bash
+   docker ps -a | grep arduino
+   ```
+
+#### **Issue 3: Compilation Errors**
+**Symptoms:**
+- API returns 500 error with compilation failure
+
+**Solutions:**
+1. Verify arduino-cli is installed in the container:
+   ```bash
+   docker exec <container_id> arduino-cli version
+   ```
+2. Check if the correct board core is installed:
+   ```bash
+   docker exec <container_id> arduino-cli core list
+   ```
+3. Install missing cores if needed:
+   ```bash
+   docker exec <container_id> arduino-cli core install arduino:avr
+   ```
+
+#### **Issue 4: Firmware Files Not Generated**
+**Symptoms:**
+- Build succeeds but no .hex file in `/var/www/ar3s/firmware/avr/`
+
+**Solutions:**
+1. Check directory permissions:
+   ```bash
+   ls -la /var/www/ar3s/firmware/
+   ```
+2. Ensure the directory exists:
+   ```bash
+   sudo mkdir -p /var/www/ar3s/firmware/avr
+   ```
+3. Set correct ownership:
+   ```bash
+   sudo chown -R ar3s:ar3s /var/www/ar3s/firmware/
+   ```
+
+#### **Issue 5: High Disk Usage**
+**Symptoms:**
+- Server runs out of disk space
+- Build failures due to insufficient space
+
+**Solutions:**
+1. Check disk usage:
+   ```bash
+   df -h
+   ```
+2. Clean temporary files immediately:
+   ```bash
+   find /tmp/test-sketch* -type d -exec rm -rf {} +
+   ```
+3. Remove old firmware files:
+   ```bash
+   find /var/www/ar3s/firmware/avr/ -type f -name "*.hex" -mtime +7 -delete
+   ```
+4. Check Docker disk usage:
+   ```bash
+   docker system df
+   docker system prune -a
+   ```
+
+#### **Issue 6: Permission Denied Errors**
+**Symptoms:**
+- Cannot write to directories
+- Service fails with permission errors
+
+**Solutions:**
+1. Check file ownership:
+   ```bash
+   ls -la /opt/ar3s-server/
+   ls -la /var/www/ar3s/
+   ```
+2. Fix ownership:
+   ```bash
+   sudo chown -R ar3s:ar3s /opt/ar3s-server/
+   sudo chown -R ar3s:ar3s /var/www/ar3s/
+   ```
+3. Verify service user in systemd config matches file owner
+
+#### **Issue 7: Slow Build Times**
+**Symptoms:**
+- Builds take excessive time to complete
+
+**Solutions:**
+1. Check system resources:
+   ```bash
+   top
+   free -h
+   ```
+2. Monitor Docker container resources:
+   ```bash
+   docker stats
+   ```
+3. Limit concurrent builds in server configuration
+4. Increase Docker container memory limit if needed
+
+---
+
+## Additional Resources
+### Supported FQBN Values
+Common Fully Qualified Board Names for AVR builds:
+- `arduino:avr:uno` - Arduino Uno
+- `arduino:avr:nano` - Arduino Nano
+- `arduino:avr:mega` - Arduino Mega 2560
+- `arduino:avr:leonardo` - Arduino Leonardo
+- `arduino:avr:micro` - Arduino Micro
+- `arduino:avr:pro` - Arduino Pro or Pro Mini
+
+### Useful Commands
+```bash
+# Check if service is listening on port
+sudo netstat -tulpn | grep 8081
+
+# Test API health
+curl -i http://127.0.0.1:8081/health
+
+# View system resource usage
+htop
+
+# Monitor real-time logs
+tail -f /var/log/syslog | grep ar3s
+```
+
+---
+
+## Security Considerations
+- Always run the service under a non-root user (e.g., `ar3s`)
+- Implement rate limiting to prevent abuse
+- Sanitize user input code before compilation
+- Use firewall rules to restrict access to port 8081
+- Keep Docker and arduino-cli updated
+- Regularly review and rotate logs
+- Monitor for unusual build patterns or excessive resource usage
+
+---
+
+## Maintenance Schedule
+### Daily:
+- Monitor service status
+- Check disk space usage
+
+### Weekly:
+- Review service logs for errors
+- Clean old temporary files
+- Verify backup completion
+
+### Monthly:
+- Update arduino-cli and board cores
+- Review and optimize cleanup policies
+- Test restore procedures
+- Update security patches
+
+---
+
+## Support and Contact
+For issues, bugs, or feature requests, please refer to the project repository or contact the development team.
+
+**Project Repository:** https://github.com/G3nosss/ar3s-ide.v2
+
+---
+
+*Last Updated: 2026-01-19*
+*Version: 2.0.0*

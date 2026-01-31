@@ -1,0 +1,10 @@
+   171.3ms (setup:858): 2026-01-22 19:40:09
+   171.4ms (setup:859): /usr/bin/pipx ensurepath
+   171.5ms (setup:860): pipx version is 1.4.3
+   171.5ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   171.5ms (mkdir:74): creating directory /home/ubuntu/.local/share/pipx/venvs
+   171.6ms (mkdir:74): creating directory /home/ubuntu/.local/bin
+   171.7ms (mkdir:74): creating directory /home/ubuntu/.local/share/man
+   172.4ms (mkdir:74): creating directory /home/ubuntu/.cache/pipx
+   172.5ms (setup:870): Adding CACHEDIR.TAG to cache directory
+   317.4ms (cli:932): pipx finished.

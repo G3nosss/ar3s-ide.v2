@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ESP Flasher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">Ar3s</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/pages/ide.html">Ar3s IDE v2</a>
+      <a href="/pages/simulator.html">Simulator</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>ESP Flasher</h1>
+    <div class="panel">
+      <p>Connect your ESP32/ESP8266 via USB. Click the button to install firmware. Requires Chrome/Edge and HTTPS.</p>
+      <esp-web-install-button manifest="/firmware/esp32/manifest.json"></esp-web-install-button>
+      <hr style="border-color:#1f2630; margin:1rem 0;">
+      <p class="muted">Coming soon: user-supplied .bin flashing directly from browser.</p>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+   110.5ms (setup:858): 2026-01-22 19:41:43
+   110.6ms (setup:859): /usr/bin/pipx install aider-chat
+   110.7ms (setup:860): pipx version is 1.4.3
+   110.7ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   111.6ms (package_name_from_spec:370): Determined package name: aider-chat
+   111.6ms (package_name_from_spec:371): Package name determined in 0.0s
+   112.2ms (run_subprocess:168): running /usr/bin/python3 -m venv --without-pip /home/ubuntu/.local/share/pipx/venvs/aider-chat
+   171.0ms (run_subprocess:190): stdout:
+   171.2ms (run_subprocess:192): stderr:
+   171.2ms (run_subprocess:193): returncode: 0
+   171.8ms (run_subprocess:168): running /usr/bin/python3 -m venv --clear /home/ubuntu/.local/share/pipx/shared
+  3634.6ms (run_subprocess:190): stdout:
+  3634.7ms (run_subprocess:192): stderr:
+  3634.7ms (run_subprocess:193): returncode: 0
+  3634.9ms (run_subprocess:168): running <checking pip's availability>
+  3654.2ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7b54bc5ffe30>, origin='/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+  3654.2ms (run_subprocess:193): returncode: 0
+  3654.3ms (upgrade:98): Upgrading shared libraries in /home/ubuntu/.local/share/pipx/shared
+  3654.6ms (run_subprocess:168): running /home/ubuntu/.local/share/pipx/shared/bin/python -m pip --no-input --disable-pip-version-check install --force-reinstall -q --upgrade pip >= 23.1
+  5327.7ms (run_subprocess:190): stdout:
+  5327.8ms (run_subprocess:192): stderr:
+  5327.8ms (run_subprocess:193): returncode: 0
+  5328.0ms (run_subprocess:168): running /home/ubuntu/.local/share/pipx/venvs/aider-chat/bin/python -c import sysconfig; print(sysconfig.get_path('purelib'))
+  5348.1ms (run_subprocess:190): stdout: /home/ubuntu/.local/share/pipx/venvs/aider-chat/lib/python3.12/site-packages
+  5348.2ms (run_subprocess:193): returncode: 0
+  5348.4ms (run_subprocess:168): running /home/ubuntu/.local/share/pipx/shared/bin/python -c import sysconfig; print(sysconfig.get_path('purelib'))
+  5367.6ms (run_subprocess:190): stdout: /home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages
+  5367.6ms (run_subprocess:193): returncode: 0
+  5367.9ms (run_subprocess:168): running /home/ubuntu/.local/share/pipx/venvs/aider-chat/bin/python --version
+  5369.5ms (run_subprocess:190): stdout: Python 3.12.3
+  5369.6ms (run_subprocess:192): stderr:
+  5369.6ms (run_subprocess:193): returncode: 0
+  5369.8ms (_parsed_package_to_package_or_url:137): cleaned package spec: aider-chat
+  5370.1ms (run_subprocess:168): running /home/ubuntu/.local/share/pipx/venvs/aider-chat/bin/python -m pip --no-input install aider-chat
+ 52560.4ms (run_subprocess:193): returncode: 0
+ 52561.6ms (run_subprocess:168): running <fetch_info_in_venv commands>
+ 52592.9ms (run_subprocess:190): stdout: {"sys_path": ["/usr/lib/python312.zip", "/usr/lib/python3.12", "/usr/lib/python3.12/lib-dynload", "/home/ubuntu/.local/share/pipx/venvs/aider-chat/lib/python3.12/site-packages", "/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages"], "python_version": "3.12.3", "environment": {"implementation_name": "cpython", "implementation_version": "3.12.3", "os_name": "posix", "platform_machine": "x86_64", "platform_release": "6.14.0-1018-aws", "platform_system": "Linux", "platform_version": "#18~24.04.1-Ubuntu SMP Mon Nov 24 19:46:27 UTC 2025", "python_full_version": "3.12.3", "platform_python_implementation": "CPython", "python_version": "3.12", "sys_platform": "linux"}}
+ 52593.0ms (run_subprocess:193): returncode: 0
+ 56040.5ms (get_venv_metadata_for_package:339): get_venv_metadata_for_package: 3479ms
+ 56040.7ms (_parsed_package_to_package_or_url:137): cleaned package spec: aider-chat
+ 56045.3ms (run_subprocess:168): running <checking pip's availability>
+ 56064.5ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7dd48e7ffe30>, origin='/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+ 56064.6ms (run_subprocess:193): returncode: 0
+ 56064.7ms (run_subprocess:168): running <checking pip's availability>
+ 56083.2ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7d8176f03e90>, origin='/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/ubuntu/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+ 56083.3ms (run_subprocess:193): returncode: 0
+ 56084.7ms (cli:932): pipx finished.

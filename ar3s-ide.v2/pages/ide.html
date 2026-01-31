@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ar3s IDE v2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/styles.css">
+  <!-- Monaco via CDN to keep server size minimal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">Ar3s</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/pages/simulator.html">Simulator</a>
+      <a href="/pages/esp-flasher.html">ESP Flasher</a>
+      <a href="/pages/esp-custom.html">ESP Custom Flasher</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Ar3s IDE v2</h1>
+    <div class="panel" style="height: auto;">
+      <div id="editor" style="height: 480px;"></div>
+
+      <div style="display:flex; gap:0.5rem; margin-top:0.5rem; align-items:center; flex-wrap:wrap;">
+        <label for="boardSelect" style="font-weight:600;">BOARD:</label>
+        <select id="boardSelect" class="board-select">
+          <option value="uno" data-fqbn="arduino:avr:uno">Arduino Uno</option>
+          <option value="nano" data-fqbn="arduino:avr:nano">Arduino Nano</option>
+          <option value="mega" data-fqbn="arduino:avr:mega">Arduino Mega 2560</option>
+          <option value="mark4" data-fqbn="arduino:avr:uno">Mark 4 (Custom)</option>
+        </select>
+        <button id="downloadBtn">Download as .ino</button>
+        <button id="buildAvrBtn">Build (AVR)</button>
+        <button id="uploadArduinoBtn">Upload to Arduino</button>
+        <button id="clearBtn">Clear</button>
+        <button id="aiBtn" class="ai-btn">⚡ Athena AI</button>
+      </div>
+
+      <pre id="buildLog" class="panel" style="margin-top:0.75rem; max-height:220px; overflow:auto;"></pre>
+      
+      <div id="uploadHistory" class="panel upload-history" style="margin-top:0.75rem;"></div>
+    </div>
+  </main>
+
+  <!-- AI Modal -->
+  <div id="aiModal" class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title" style="display:none;">
+    <div class="ai-modal-content">
+      <div class="ai-modal-header">
+        <h2 id="ai-modal-title">⚡ Athena AI Assistant</h2>
+        <button id="closeAiModal" class="close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="ai-modal-body">
+        <div class="ai-mode-selector">
+          <label>
+            <input type="radio" name="aiMode" value="generate" checked>
+            <span>Generate Code</span>
+          </label>
+          <label>
+            <input type="radio" name="aiMode" value="debug">
+            <span>Debug Code</span>
+          </label>
+        </div>
+        <div class="ai-input-section">
+          <label for="aiPrompt">What would you like to do?</label>
+          <textarea id="aiPrompt" class="ai-prompt" placeholder="e.g., Create a blink program with 2 LEDs on pins 12 and 13"></textarea>
+          <button id="generateBtn" class="generate-btn">Generate with AI</button>
+        </div>
+        <div id="aiLoading" class="ai-loading" style="display:none;">
+          <div class="loading-spinner"></div>
+          <p>Athena is thinking...</p>
+        </div>
+        <div id="aiError" class="ai-error" style="display:none;"></div>
+        <div id="aiResult" class="ai-result" style="display:none;">
+          <h3>Generated Code:</h3>
+          <pre id="generatedCode" class="generated-code"></pre>
+          <div class="ai-actions">
+            <button id="putInIdeBtn" class="put-in-ide-btn">Put in IDE</button>
+            <button id="generatePinoutBtn" class="generate-pinout-btn">Generate Pinout Diagram</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Notification -->
+  <div id="successNotification" class="success-notification" style="display:none;">
+    <span class="success-icon">✓</span>
+    <span class="success-message">Code injected into IDE successfully!</span>
+  </div>
+
+  <script type="module" src="/assets/ide.js"></script>
+  <script type="module" src="/assets/athena-ai.js"></script>
+  <script type="module" src="/assets/build-avr.js"></script>
+  <script type="module" src="/assets/athena-ai.js"></script>
+  <script type="module">
+    import { getEditorValue } from '/assets/ide.js';
+    import { initializeUpload } from '/assets/upload-arduino.js';
+    
+    // Initialize upload functionality after page loads
+    window.addEventListener('load', () => {
+      initializeUpload(getEditorValue);
+    });
+  </script>
+</body>
+</html>
